@@ -146,7 +146,7 @@
             color: var(--text-muted);
         }
 
-        /* Модальное окно поиска (как на скриншоте) */
+        /* Модальное окно поиска */
         .search-modal-overlay {
             position: fixed;
             top: 0;
@@ -248,30 +248,6 @@
             opacity: 0.4;
         }
 
-        .search-modal-footer {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            font-size: 12px;
-            color: var(--text-muted);
-            border-top: 1px solid var(--border-color);
-            padding-top: 14px;
-        }
-
-        .search-modal-footer div {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .search-modal-footer kbd {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 2px 5px;
-            border-radius: 4px;
-            font-size: 10px;
-        }
-
         /* 5 Столбцов */
         .tier-grid {
             display: grid;
@@ -335,7 +311,7 @@
         .tier-content::-webkit-scrollbar { width: 4px; }
         .tier-content::-webkit-scrollbar-thumb { background: #313244; border-radius: 4px; }
 
-        /* Карточка игрока (теперь со скином в полный рост/бюст) */
+        /* Карточка игрока */
         .player-card {
             background-color: rgba(18, 20, 30, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.03);
@@ -362,7 +338,6 @@
             overflow: hidden;
         }
 
-        /* Изменено под аватарку скина бюста */
         .player-avatar {
             width: 32px;
             height: 32px;
@@ -585,11 +560,6 @@
                     <span>Начните вводить ник для поиска...</span>
                 </div>
             </div>
-            <div class="search-modal-footer">
-                <div><kbd>↑</kbd> <kbd>↓</kbd> навигация</div>
-                <div><kbd>↵</kbd> выбрать</div>
-                <div><kbd>esc</kbd> закрыть</div>
-            </div>
         </div>
     </div>
 
@@ -718,7 +688,6 @@
                     const card = document.createElement('div');
                     card.className = 'player-card';
 
-                    // Используем стабильное API от mc-heads для скин-аватара (бюста) как на 2-м фото
                     const avatarUrl = `https://mc-heads.net/avatar/${encodeURIComponent(player.user_id)}/32`;
 
                     card.innerHTML = `
@@ -736,7 +705,6 @@
             }
         }
 
-        // Управление модальным окном поиска
         function openSearchModal() {
             const modal = document.getElementById('search-modal');
             modal.classList.add('active');
