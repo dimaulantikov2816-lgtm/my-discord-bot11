@@ -56,10 +56,10 @@
         }
 
         .logo-box img {
-            width: 32px;
-            height: 32px;
+            width: 34px;
+            height: 34px;
             object-fit: contain;
-            filter: drop-shadow(0 0 4px rgba(203, 166, 247, 0.5));
+            filter: drop-shadow(0 0 6px rgba(203, 166, 247, 0.6));
         }
 
         .header-title h1 {
@@ -374,8 +374,8 @@
     <div class="header">
         <div class="header-left">
             <div class="logo-box">
-                <!-- Кристалл Энда вместо алмаза -->
-                <img src="https://minecraft.wiki/images/End_Crystal_JE2_BE2.png" alt="End Crystal">
+                <!-- Рабочая картинка кристалла Энда -->
+                <img src="https://community.intersystems.com/sites/default/files/inline/images/end_crystal.png" alt="End Crystal">
             </div>
             <div class="header-title">
                 <h1>VANILLA</h1>
@@ -512,7 +512,8 @@
                     const card = document.createElement('div');
                     card.className = 'player-card';
 
-                    const avatarUrl = `https://crafatar.com/avatars/${encodeURIComponent(player.user_id)}?size=24&overlay`;
+                    // Используем стабильное API от mc-heads для отображения головы по нику
+                    const avatarUrl = `https://mc-heads.net/avatar/${encodeURIComponent(player.user_id)}/24`;
 
                     card.innerHTML = `
                         <div class="player-info">
@@ -522,7 +523,7 @@
                         <span class="player-rank">${escapeHtml(player.rank_type)}</span>
                     `;
 
-                    // Клик по карточке открывает профиль игрока
+                    // Клик открывает модальное окно с информацией по тесту
                     card.addEventListener('click', () => openPlayerModal(player));
 
                     container.appendChild(card);
@@ -538,7 +539,7 @@
             const testerEl = document.getElementById('modal-tester');
             const commentEl = document.getElementById('modal-comment');
 
-            avatarImg.src = `https://crafatar.com/avatars/${encodeURIComponent(player.user_id)}?size=48&overlay`;
+            avatarImg.src = `https://mc-heads.net/avatar/${encodeURIComponent(player.user_id)}/48`;
             nickEl.textContent = player.user_id;
             rankEl.textContent = `Ранг: ${player.rank_type}`;
             testerEl.textContent = player.tester_id || 'Не указан';
