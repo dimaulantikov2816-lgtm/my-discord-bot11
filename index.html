@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Результаты Игроков</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1e1e2e; color: #fff; padding: 30px; }
+        h1 { text-align: center; color: #89b4fa; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #313244; border-radius: 8px; overflow: hidden; }
+        th, td { padding: 14px; border: 1px solid #45475a; text-align: center; }
+        th { background-color: #45475a; color: #cdd6f4; font-size: 16px; }
+        tr:nth-child(even) { background-color: #181825; }
+        .rank { font-weight: bold; color: #a6e3a1; font-size: 18px; }
+    </style>
+</head>
+<body>
+
+    <h1>🏆 Таблица результатов игроков</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Игрок</th>
+                <th>Ранг</th>
+                <th>Тестер</th>
+            </tr>
+        </thead>
+        <tbody id="results-table">
+            <!-- Данные загрузятся автоматически -->
+        </tbody>
+    </table>
+
+    <script>
+        async function loadResults() {
+            try {
+                // Загружаем файл с данными
+                const response = await fetch('./data.json');
+                const data = await response.json();
+                
+                const tableBody = document.getElementById('results-table');
+                tableBody.innerHTML = '';
+
+                // Отображаем активные тесты
+                const tests = data.activeTests || {};
+                const keys = Object.keys(tests);
+
+                if (keys.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="3">Завершенных тестов пока нет</td></tr>';
+                    return;
+                }
+
+                keys.forEach(id => {
+                    const item = tests[id];
+                    const row = `
+                        <tr>
+                            <td><@${item.userId}></td>
+                            <td class="rank">${item.type === 'high' ? 'HT3+' : 'Обычный'}</td>
+                            <td><@${item.testerId}></td>
+                        </tr>
+                    `;
+                    tableBody.innerHTML += row;
+                });
+            } catch (error) {
+                console.error('Ошибка загрузки данных:', error);
+            }
+        }
+
+        loadResults();
+    </script>
+</body>
+</html>
