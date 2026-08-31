@@ -6,8 +6,30 @@
     <title>Результаты Игроков</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1e1e2e; color: #fff; padding: 30px; }
-        h1 { text-align: center; color: #89b4fa; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #313244; border-radius: 8px; overflow: hidden; }
+        h1 { text-align: center; color: #89b4fa; margin-bottom: 20px; }
+        
+        /* Блок поиска */
+        .search-container {
+            max-width: 500px;
+            margin: 0 auto 20px auto;
+        }
+        .search-input {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 2px solid #45475a;
+            background-color: #313244;
+            color: #fff;
+            outline: none;
+            box-sizing: border-box;
+            transition: border-color 0.2s ease;
+        }
+        .search-input:focus {
+            border-color: #89b4fa;
+        }
+
+        table { width: 100%; border-collapse: collapse; background: #313244; border-radius: 8px; overflow: hidden; }
         th, td { padding: 14px; border: 1px solid #45475a; text-align: center; }
         th { background-color: #45475a; color: #cdd6f4; font-size: 16px; }
         tr:nth-child(even) { background-color: #181825; }
@@ -21,6 +43,11 @@
 <body>
 
     <h1>🏆 Таблица результатов игроков</h1>
+
+    <!-- Поле поиска -->
+    <div class="search-container">
+        <input type="text" id="search-input" class="search-input" placeholder="🔍 Введите никнейм для поиска...">
+    </div>
 
     <table>
         <thead>
@@ -43,6 +70,8 @@
         const { createClient } = supabase;
         const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        let allResults = []; // Глобальный массив для хранения загруженных данных
+
         async function loadResults() {
             const tableBody = document.getElementById('results-table');
             
@@ -54,29 +83,44 @@
 
                 if (error) throw error;
 
-                tableBody.innerHTML = '';
-
-                if (!data || data.length === 0) {
-                    tableBody.innerHTML = '<tr><td colspan="4">Завершенных тестов пока нет</td></tr>';
-                    return;
-                }
-
-                data.forEach(item => {
-                    const row = `
-                        <tr>
-                            <td class="nick">${item.user_id}</td>
-                            <td class="rank">${item.rank_type}</td>
-                            <td>${item.tester_id}</td>
-                            <td class="comment">${item.comment || '—'}</td>
-                        </tr>
-                    `;
-                    tableBody.innerHTML += row;
-                });
+                allResults = data || [];
+                renderTable(allResults);
             } catch (error) {
                 console.error('Ошибка загрузки данных:', error);
                 tableBody.innerHTML = '<tr><td colspan="4" style="color: #f38ba8;">Ошибка загрузки данных из БД</td></tr>';
             }
         }
+
+        function renderTable(data) {
+            const tableBody = document.getElementById('results-table');
+            tableBody.innerHTML = '';
+
+            if (data.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="4">Ничего не найдено</td></tr>';
+                return;
+            }
+
+            data.forEach(item => {
+                const row = `
+                    <tr>
+                        <td class="nick">${item.user_id}</td>
+                        <td class="rank">${item.rank_type}</td>
+                        <td>${item.tester_id}</td>
+                        <td class="comment">${item.comment || '—'}</td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        // Фильтрация в реальном времени
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            const filtered = allResults.filter(item => 
+                item.user_id.toLowerCase().includes(query)
+            );
+            renderTable(filtered);
+        });
 
         loadResults();
     </script>
