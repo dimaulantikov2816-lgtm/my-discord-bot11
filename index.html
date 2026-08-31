@@ -78,28 +78,198 @@
             letter-spacing: 2px;
         }
 
-        /* Поиск */
-        .search-container {
-            max-width: 400px;
-            width: 100%;
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
-        .search-input {
-            width: 100%;
-            padding: 10px 16px;
-            font-size: 14px;
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
+        /* Кнопка Discord */
+        .discord-btn {
+            background: linear-gradient(135deg, #5865F2, #4752C4);
+            border: none;
+            border-radius: 12px;
+            width: 54px;
+            height: 54px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(88, 101, 242, 0.3);
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .discord-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(88, 101, 242, 0.5);
+        }
+
+        .discord-btn svg {
+            width: 26px;
+            height: 26px;
+            fill: #ffffff;
+        }
+
+        /* Триггер поиска (кнопка в шапке) */
+        .search-trigger {
             background-color: rgba(15, 17, 26, 0.6);
-            color: #fff;
-            outline: none;
-            box-sizing: border-box;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 0 16px;
+            height: 54px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            width: 240px;
             transition: all 0.2s ease;
         }
 
-        .search-input:focus {
+        .search-trigger:hover {
             border-color: var(--accent-color);
-            box-shadow: 0 0 10px rgba(137, 180, 250, 0.15);
+            background-color: rgba(25, 28, 42, 0.8);
+        }
+
+        .search-trigger span {
+            color: var(--text-muted);
+            font-size: 14px;
+            flex-grow: 1;
+        }
+
+        .search-trigger kbd {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* Модальное окно поиска (как на скриншоте) */
+        .search-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .search-modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .search-modal {
+            background: #141622;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 540px;
+            padding: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            transform: scale(0.95);
+            transition: transform 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .search-modal-overlay.active .search-modal {
+            transform: scale(1);
+        }
+
+        .search-modal-input-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-modal-input-box svg {
+            position: absolute;
+            left: 16px;
+            width: 18px;
+            height: 18px;
+            fill: var(--text-muted);
+        }
+
+        .search-modal-input {
+            width: 100%;
+            background: rgba(18, 20, 30, 0.8);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px 45px 14px 48px;
+            font-size: 15px;
+            color: #fff;
+            outline: none;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        .search-modal-input:focus {
+            border-color: var(--accent-color);
+        }
+
+        .search-modal-input-box kbd {
+            position: absolute;
+            right: 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .search-modal-empty {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .search-modal-empty svg {
+            width: 32px;
+            height: 32px;
+            fill: var(--text-muted);
+            opacity: 0.4;
+        }
+
+        .search-modal-footer {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 12px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            padding-top: 14px;
+        }
+
+        .search-modal-footer div {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .search-modal-footer kbd {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-size: 10px;
         }
 
         /* 5 Столбцов */
@@ -165,12 +335,12 @@
         .tier-content::-webkit-scrollbar { width: 4px; }
         .tier-content::-webkit-scrollbar-thumb { background: #313244; border-radius: 4px; }
 
-        /* Карточка игрока */
+        /* Карточка игрока (теперь со скином в полный рост/бюст) */
         .player-card {
             background-color: rgba(18, 20, 30, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.03);
             border-radius: 10px;
-            padding: 8px 12px;
+            padding: 6px 12px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -192,12 +362,14 @@
             overflow: hidden;
         }
 
+        /* Изменено под аватарку скина бюста */
         .player-avatar {
-            width: 24px;
-            height: 24px;
-            border-radius: 4px;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
             background-color: #313244;
             flex-shrink: 0;
+            object-fit: cover;
         }
 
         .player-nick {
@@ -227,7 +399,7 @@
             padding: 30px 0;
         }
 
-        /* Модальное окно профиля */
+        /* Модальное окно профиля игрока */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -280,6 +452,7 @@
             height: 48px;
             border-radius: 8px;
             background: #313244;
+            object-fit: cover;
         }
 
         .modal-title-box h3 {
@@ -375,7 +548,6 @@
     <div class="header">
         <div class="header-left">
             <div class="logo-box">
-                <!-- Вставлена ваша кастомная картинка кристалла Энда -->
                 <img src="https://cdn.discordapp.com/attachments/1485246339083145289/1543677721731797082/105_20260829192905.png?ex=6a970ee9&is=6a95bd69&hm=330f0ec5e645fdec17ee1ee59e95bb551761dd95d72d42d1c3da349bb82023e5&" alt="End Crystal">
             </div>
             <div class="header-title">
@@ -383,8 +555,41 @@
                 <p>Рейтинг</p>
             </div>
         </div>
-        <div class="search-container">
-            <input type="text" id="search-input" class="search-input" placeholder="🔍 Поиск по нику...">
+        <div class="header-right">
+            <!-- Открывающийся поиск (триггер) -->
+            <div class="search-trigger" onclick="openSearchModal()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <span>Поиск игрока...</span>
+                <kbd>Ctrl K</kbd>
+            </div>
+            <!-- Иконка Discord -->
+            <a href="https://discord.gg/PbsTxqNKfF" target="_blank" class="discord-btn" title="Наш Discord сервер">
+                <svg viewBox="0 0 127.14 96.36">
+                    <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6,5.4,80.21h0A105.73,105.73,0,0,0,32.79,93.64,77.11,77.11,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.81,8.39,105.69,105.69,0,0,0,27.39-13.43c8.11-26.24-1.72-50.05-18.15-72.16ZM42.45,65.69C36.18,65.69,31,60,31,53s5.18-12.72,11.45-12.72S53.9,46,53.88,53,48.72,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5.18-12.72,11.45-12.72S96.15,46,96.13,53,91,65.69,84.69,65.69Z"/>
+                </svg>
+            </a>
+        </div>
+    </div>
+
+    <!-- Модальное окно поиска -->
+    <div class="search-modal-overlay" id="search-modal" onclick="closeSearchModal(event)">
+        <div class="search-modal" onclick="event.stopPropagation()">
+            <div class="search-modal-input-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="modal-search-input" class="search-modal-input" placeholder="Поиск игрока..." autofocus>
+                <kbd>ESC</kbd>
+            </div>
+            <div id="search-modal-results" style="max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;">
+                <div class="search-modal-empty">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <span>Начните вводить ник для поиска...</span>
+                </div>
+            </div>
+            <div class="search-modal-footer">
+                <div><kbd>↑</kbd> <kbd>↓</kbd> навигация</div>
+                <div><kbd>↵</kbd> выбрать</div>
+                <div><kbd>esc</kbd> закрыть</div>
+            </div>
         </div>
     </div>
 
@@ -513,7 +718,8 @@
                     const card = document.createElement('div');
                     card.className = 'player-card';
 
-                    const avatarUrl = `https://mc-heads.net/avatar/${encodeURIComponent(player.user_id)}/24`;
+                    // Используем стабильное API от mc-heads для скин-аватара (бюста) как на 2-м фото
+                    const avatarUrl = `https://mc-heads.net/avatar/${encodeURIComponent(player.user_id)}/32`;
 
                     card.innerHTML = `
                         <div class="player-info">
@@ -530,6 +736,81 @@
             }
         }
 
+        // Управление модальным окном поиска
+        function openSearchModal() {
+            const modal = document.getElementById('search-modal');
+            modal.classList.add('active');
+            const input = document.getElementById('modal-search-input');
+            input.value = '';
+            input.focus();
+            renderSearchResults('');
+        }
+
+        function closeSearchModal(e) {
+            if (!e || e.target === document.getElementById('search-modal') || e.key === 'Escape') {
+                document.getElementById('search-modal').classList.remove('active');
+            }
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+                e.preventDefault();
+                openSearchModal();
+            }
+            if (e.key === 'Escape') {
+                closeSearchModal(e);
+                closeModalDirect();
+            }
+        });
+
+        document.getElementById('modal-search-input').addEventListener('input', (e) => {
+            renderSearchResults(e.target.value.toLowerCase().trim());
+        });
+
+        function renderSearchResults(query) {
+            const container = document.getElementById('search-modal-results');
+            if (!query) {
+                container.innerHTML = `
+                    <div class="search-modal-empty">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <span>Начните вводить ник для поиска...</span>
+                    </div>
+                `;
+                return;
+            }
+
+            const filtered = allResults.filter(player => player.user_id.toLowerCase().includes(query));
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="search-modal-empty">
+                        <span>Игроки не найдены</span>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '';
+            filtered.forEach(player => {
+                const card = document.createElement('div');
+                card.className = 'player-card';
+                const avatarUrl = `https://mc-heads.net/avatar/${encodeURIComponent(player.user_id)}/32`;
+
+                card.innerHTML = `
+                    <div class="player-info">
+                        <img class="player-avatar" src="${avatarUrl}" alt="" onerror="this.style.display='none'">
+                        <span class="player-nick">${escapeHtml(player.user_id)}</span>
+                    </div>
+                    <span class="player-rank">${escapeHtml(player.rank_type)}</span>
+                `;
+                card.addEventListener('click', () => {
+                    document.getElementById('search-modal').classList.remove('active');
+                    openPlayerModal(player);
+                });
+                container.appendChild(card);
+            });
+        }
+
         function openPlayerModal(player) {
             const modalOverlay = document.getElementById('player-modal');
             const avatarImg = document.getElementById('modal-avatar');
@@ -538,7 +819,7 @@
             const testerEl = document.getElementById('modal-tester');
             const commentEl = document.getElementById('modal-comment');
 
-            avatarImg.src = `https://mc-heads.net/avatar/${encodeURIComponent(player.user_id)}/48`;
+            avatarImg.src = `https://mc-heads.net/avatar/${encodeURIComponent(player.user_id)}/64`;
             nickEl.textContent = player.user_id;
             rankEl.textContent = `Ранг: ${player.rank_type}`;
             testerEl.textContent = player.tester_id || 'Не указан';
@@ -572,14 +853,6 @@
                       .replace(/"/g, "&quot;")
                       .replace(/'/g, "&#039;");
         }
-
-        document.getElementById('search-input').addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase().trim();
-            const filtered = allResults.filter(player => 
-                player.user_id.toLowerCase().includes(query)
-            );
-            renderTiers(filtered);
-        });
 
         loadResults();
     </script>
