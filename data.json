@@ -1,0 +1,67 @@
+{
+  "queue": [],
+  "queueOpen": false,
+  "activeTesterIds": [],
+  "activeTests": {},
+  "highTests": {
+    "1543992371354542094": {
+      "type": "high",
+      "users": [
+        "1386809893012635723",
+        "979707661866119270",
+        "1141004527613521970"
+      ],
+      "createdBy": "1386809893012635723",
+      "testerId": "1386809893012635723",
+      "startedAt": 1788186867714
+    }
+  },
+  "cooldowns": {
+    "normal": {
+      "1353321921713803278": {
+        "rank": "LT3",
+        "permanent": true,
+        "createdAt": 1788176125621,
+        "expiresAt": null
+      },
+      "1435273721081499658": {
+        "rank": "LT4",
+        "permanent": false,
+        "createdAt": 1788177597590,
+        "expiresAt": 1788782397590
+      },
+      "1386809893012635723": {
+        "rank": "LT3",
+        "permanent": true,
+        "createdAt": 1788186401505,
+        "expiresAt": null
+      },
+      "1516377019334524932": {
+        "rank": "LT3",
+        "permanent": true,
+        "createdAt": 1788186748583,
+        "expiresAt": null
+      }
+    },
+    "high": {
+      "949982176957583371": {
+        "rank": "LT3",
+        "permanent": false,
+        "createdAt": 1788183540474,
+        "expiresAt": 1788788340474
+      },
+      "1353321921713803278": {
+        "rank": "LT3",
+        "permanent": false,
+        "createdAt": 1788183940697,
+        "expiresAt": 1788788740697
+      },
+      "1516377019334524932": {
+        "rank": "LT3",
+        "permanent": false,
+        "createdAt": 1788188311356,
+        "expiresAt": 1788793111356
+      }
+    }
+  }
+}
