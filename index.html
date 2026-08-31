@@ -12,7 +12,10 @@
         th { background-color: #45475a; color: #cdd6f4; font-size: 16px; }
         tr:nth-child(even) { background-color: #181825; }
         .rank { font-weight: bold; color: #a6e3a1; font-size: 18px; }
+        .comment { font-style: italic; color: #bac2de; font-size: 14px; }
     </style>
+    <!-- Подключаем официальный клиент Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -21,48 +24,59 @@
     <table>
         <thead>
             <tr>
-                <th>Игрок</th>
+                <th>Игрок (ID)</th>
                 <th>Ранг</th>
-                <th>Тестер</th>
+                <th>Тестер (ID)</th>
+                <th>Комментарий</th>
             </tr>
         </thead>
         <tbody id="results-table">
-            <!-- Данные загрузятся автоматически -->
+            <tr><td colspan="4">Загрузка данных...</td></tr>
         </tbody>
     </table>
 
     <script>
+        // Конфигурация Supabase
+        const SUPABASE_URL = 'https://cyhsopkvllsliuazldlm.supabase.co';
+        // ⚠️ ЗАМЕНИТЕ СТРОКУ НИЖЕ НА ВАШ SUPABASE_ANON_KEY (из Project Settings -> API)
+        const SUPABASE_ANON_KEY = 'ВАШ_SUPABASE_ANON_KEY';
+
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
         async function loadResults() {
+            const tableBody = document.getElementById('results-table');
+            
             try {
-                // Загружаем файл с данными
-                const response = await fetch('./data.json');
-                const data = await response.json();
-                
-                const tableBody = document.getElementById('results-table');
+                // Запрашиваем записи из базы Supabase, сортируя по свежести
+                const { data, error } = await supabaseClient
+                    .from('test_results')
+                    .select('*')
+                    .order('updated_at', { ascending: false });
+
+                if (error) throw error;
+
                 tableBody.innerHTML = '';
 
-                // Отображаем активные тесты
-                const tests = data.activeTests || {};
-                const keys = Object.keys(tests);
-
-                if (keys.length === 0) {
-                    tableBody.innerHTML = '<tr><td colspan="3">Завершенных тестов пока нет</td></tr>';
+                if (!data || data.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="4">Завершенных тестов пока нет</td></tr>';
                     return;
                 }
 
-                keys.forEach(id => {
-                    const item = tests[id];
+                data.forEach(item => {
                     const row = `
                         <tr>
-                            <td><@${item.userId}></td>
-                            <td class="rank">${item.type === 'high' ? 'HT3+' : 'Обычный'}</td>
-                            <td><@${item.testerId}></td>
+                            <td>${item.user_id}</td>
+                            <td class="rank">${item.rank_type}</td>
+                            <td>${item.tester_id}</td>
+                            <td class="comment">${item.comment || '—'}</td>
                         </tr>
                     `;
                     tableBody.innerHTML += row;
                 });
             } catch (error) {
                 console.error('Ошибка загрузки данных:', error);
+                tableBody.innerHTML = '<tr><td colspan="4" style="color: #f38ba8;">Ошибка загрузки данных из БД</td></tr>';
             }
         }
 
