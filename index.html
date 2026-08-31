@@ -13,6 +13,7 @@
         tr:nth-child(even) { background-color: #181825; }
         .rank { font-weight: bold; color: #a6e3a1; font-size: 18px; }
         .comment { font-style: italic; color: #bac2de; font-size: 14px; }
+        .nick { font-weight: 600; color: #89b4fa; }
     </style>
     <!-- Подключаем официальный клиент Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -24,9 +25,9 @@
     <table>
         <thead>
             <tr>
-                <th>Игрок (ID)</th>
+                <th>Ник игрока</th>
                 <th>Ранг</th>
-                <th>Тестер (ID)</th>
+                <th>Тестер</th>
                 <th>Комментарий</th>
             </tr>
         </thead>
@@ -36,9 +37,7 @@
     </table>
 
     <script>
-        // Конфигурация Supabase
         const SUPABASE_URL = 'https://cyhsopkvllsliuazldlm.supabase.co';
-        // ⚠️ ЗАМЕНИТЕ СТРОКУ НИЖЕ НА ВАШ SUPABASE_ANON_KEY (из Project Settings -> API)
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN5aHNvcGt2bGxzbGl1YXpsZGxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxOTI1MjIsImV4cCI6MjEwMzc2ODUyMn0.ypkeu5pPJc7jZaOzFURSmQeomdhvUlseQLsowJc_4nQ';
 
         const { createClient } = supabase;
@@ -48,7 +47,6 @@
             const tableBody = document.getElementById('results-table');
             
             try {
-                // Запрашиваем записи из базы Supabase, сортируя по свежести
                 const { data, error } = await supabaseClient
                     .from('test_results')
                     .select('*')
@@ -66,7 +64,7 @@
                 data.forEach(item => {
                     const row = `
                         <tr>
-                            <td>${item.user_id}</td>
+                            <td class="nick">${item.user_id}</td>
                             <td class="rank">${item.rank_type}</td>
                             <td>${item.tester_id}</td>
                             <td class="comment">${item.comment || '—'}</td>
