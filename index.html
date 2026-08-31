@@ -3,15 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Результаты Игроков</title>
+    <title>Топ Игроков по TIER</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1e1e2e; color: #fff; padding: 30px; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #1e1e2e; 
+            color: #fff; 
+            padding: 20px; 
+            margin: 0;
+        }
         h1 { text-align: center; color: #89b4fa; margin-bottom: 20px; }
         
         /* Блок поиска */
         .search-container {
             max-width: 500px;
-            margin: 0 auto 20px auto;
+            margin: 0 auto 25px auto;
         }
         .search-input {
             width: 100%;
@@ -29,39 +35,136 @@
             border-color: #89b4fa;
         }
 
-        table { width: 100%; border-collapse: collapse; background: #313244; border-radius: 8px; overflow: hidden; }
-        th, td { padding: 14px; border: 1px solid #45475a; text-align: center; }
-        th { background-color: #45475a; color: #cdd6f4; font-size: 16px; }
-        tr:nth-child(even) { background-color: #181825; }
-        .rank { font-weight: bold; color: #a6e3a1; font-size: 18px; }
-        .comment { font-style: italic; color: #bac2de; font-size: 14px; }
-        .nick { font-weight: 600; color: #89b4fa; }
+        /* Контейнер 5 столбцов */
+        .tier-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            align-items: start;
+        }
+
+        @media (max-width: 1100px) {
+            .tier-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+        }
+
+        /* Стиль каждого TIER-столбца */
+        .tier-column {
+            background-color: #313244;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #45475a;
+        }
+
+        .tier-header {
+            background-color: #45475a;
+            color: #cdd6f4;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            padding: 12px;
+            border-bottom: 2px solid #585b70;
+        }
+
+        .tier-content {
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-height: 100px;
+        }
+
+        /* Карточка игрока */
+        .player-card {
+            background-color: #181825;
+            border: 1px solid #45475a;
+            border-radius: 6px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .player-nick {
+            font-weight: 600;
+            color: #89b4fa;
+            font-size: 15px;
+            word-break: break-word;
+        }
+
+        .player-rank {
+            font-weight: bold;
+            font-size: 13px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background-color: #45475a;
+            color: #a6e3a1;
+        }
+
+        .player-tester {
+            font-size: 12px;
+            color: #a6adc8;
+        }
+
+        .player-comment {
+            font-size: 12px;
+            font-style: italic;
+            color: #bac2de;
+            border-top: 1px dashed #45475a;
+            padding-top: 4px;
+            margin-top: 2px;
+            word-break: break-word;
+        }
+
+        .empty-msg {
+            text-align: center;
+            color: #6c7086;
+            font-size: 14px;
+            padding: 20px 0;
+        }
     </style>
     <!-- Подключаем официальный клиент Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-    <h1>🏆 Таблица результатов игроков</h1>
+    <h1>🏆 Сетка игроков по TIER</h1>
 
     <!-- Поле поиска -->
     <div class="search-container">
-        <input type="text" id="search-input" class="search-input" placeholder="🔍 Введите никнейм для поиска...">
+        <input type="text" id="search-input" class="search-input" placeholder="🔍 Поиск по нику...">
     </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Ник игрока</th>
-                <th>Ранг</th>
-                <th>Тестер</th>
-                <th>Комментарий</th>
-            </tr>
-        </thead>
-        <tbody id="results-table">
-            <tr><td colspan="4">Загрузка данных...</td></tr>
-        </tbody>
-    </table>
+    <!-- 5 Столбцов -->
+    <div class="tier-grid">
+        <div class="tier-column">
+            <div class="tier-header">TIER 1</div>
+            <div class="tier-content" id="tier-1"><div class="empty-msg">Загрузка...</div></div>
+        </div>
+        <div class="tier-column">
+            <div class="tier-header">TIER 2</div>
+            <div class="tier-content" id="tier-2"><div class="empty-msg">Загрузка...</div></div>
+        </div>
+        <div class="tier-column">
+            <div class="tier-header">TIER 3</div>
+            <div class="tier-content" id="tier-3"><div class="empty-msg">Загрузка...</div></div>
+        </div>
+        <div class="tier-column">
+            <div class="tier-header">TIER 4</div>
+            <div class="tier-content" id="tier-4"><div class="empty-msg">Загрузка...</div></div>
+        </div>
+        <div class="tier-column">
+            <div class="tier-header">TIER 5</div>
+            <div class="tier-content" id="tier-5"><div class="empty-msg">Загрузка...</div></div>
+        </div>
+    </div>
 
     <script>
         const SUPABASE_URL = 'https://cyhsopkvllsliuazldlm.supabase.co';
@@ -70,56 +173,117 @@
         const { createClient } = supabase;
         const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        let allResults = []; // Глобальный массив для хранения загруженных данных
+        let allResults = []; // Хранилище всех результатов
+
+        // Маппинг рангов на TIER столбцы
+        const TIER_MAP = {
+            'HT1': 1, 'LT1': 1,
+            'HT2': 2, 'LT2': 2,
+            'HT3': 3, 'LT3': 3,
+            'HT4': 4, 'LT4': 4,
+            'HT5': 5, 'LT5': 5
+        };
 
         async function loadResults() {
-            const tableBody = document.getElementById('results-table');
-            
             try {
                 const { data, error } = await supabaseClient
                     .from('test_results')
-                    .select('*')
-                    .order('updated_at', { ascending: false });
+                    .select('*');
 
                 if (error) throw error;
 
                 allResults = data || [];
-                renderTable(allResults);
+                renderTiers(allResults);
             } catch (error) {
                 console.error('Ошибка загрузки данных:', error);
-                tableBody.innerHTML = '<tr><td colspan="4" style="color: #f38ba8;">Ошибка загрузки данных из БД</td></tr>';
+                for (let i = 1; i <= 5; i++) {
+                    document.getElementById(`tier-${i}`).innerHTML = '<div class="empty-msg" style="color:#f38ba8;">Ошибка</div>';
+                }
             }
         }
 
-        function renderTable(data) {
-            const tableBody = document.getElementById('results-table');
-            tableBody.innerHTML = '';
+        // Функция сортировки: Сначала HT, потом LT; внутри каждой категории — по алфавиту
+        function sortPlayers(players) {
+            return players.sort((a, b) => {
+                const rankA = a.rank_type.toUpperCase();
+                const rankB = b.rank_type.toUpperCase();
+                
+                const isHT_A = rankA.startsWith('HT');
+                const isHT_B = rankB.startsWith('HT');
 
-            if (data.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="4">Ничего не найдено</td></tr>';
-                return;
-            }
+                // Если один HT, а другой LT: HT всегда выше
+                if (isHT_A && !isHT_B) return -1;
+                if (!isHT_A && isHT_B) return 1;
 
-            data.forEach(item => {
-                const row = `
-                    <tr>
-                        <td class="nick">${item.user_id}</td>
-                        <td class="rank">${item.rank_type}</td>
-                        <td>${item.tester_id}</td>
-                        <td class="comment">${item.comment || '—'}</td>
-                    </tr>
-                `;
-                tableBody.innerHTML += row;
+                // Если оба HT или оба LT: сортируем по нику по алфавиту (без учета регистра)
+                return a.user_id.localeCompare(b.user_id, undefined, { sensitivity: 'base' });
             });
         }
 
-        // Фильтрация в реальном времени
+        function renderTiers(data) {
+            // Очищаем все колонки
+            for (let i = 1; i <= 5; i++) {
+                document.getElementById(`tier-${i}`).innerHTML = '';
+            }
+
+            // Группируем игроков по TIER
+            const tiers = { 1: [], 2: [], 3: [], 4: [], 5: [] };
+
+            data.forEach(player => {
+                const tierNum = TIER_MAP[player.rank_type.toUpperCase()];
+                if (tierNum) {
+                    tiers[tierNum].push(player);
+                }
+            });
+
+            // Отрисовываем каждый столб с сортировкой
+            for (let i = 1; i <= 5; i++) {
+                const container = document.getElementById(`tier-${i}`);
+                const sortedPlayers = sortPlayers(tiers[i]);
+
+                if (sortedPlayers.length === 0) {
+                    container.innerHTML = '<div class="empty-msg">Пусто</div>';
+                    continue;
+                }
+
+                sortedPlayers.forEach(player => {
+                    const card = document.createElement('div');
+                    card.className = 'player-card';
+
+                    const commentHTML = player.comment && player.comment !== 'Без комментария' 
+                        ? `<div class="player-comment">${escapeHtml(player.comment)}</div>` 
+                        : '';
+
+                    card.innerHTML = `
+                        <div class="card-top">
+                            <span class="player-nick">${escapeHtml(player.user_id)}</span>
+                            <span class="player-rank">${escapeHtml(player.rank_type)}</span>
+                        </div>
+                        <div class="player-tester">Тестер: ${escapeHtml(player.tester_id)}</div>
+                        ${commentHTML}
+                    `;
+                    container.appendChild(card);
+                });
+            }
+        }
+
+        // Безопасность вывода строк (защита от XSS)
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, "&amp;")
+                      .replace(/</g, "&lt;")
+                      .replace(/>/g, "&gt;")
+                      .replace(/"/g, "&quot;")
+                      .replace(/'/g, "&#039;");
+        }
+
+        // Фильтрация поиска в реальном времени
         document.getElementById('search-input').addEventListener('input', (e) => {
             const query = e.target.value.toLowerCase().trim();
-            const filtered = allResults.filter(item => 
-                item.user_id.toLowerCase().includes(query)
+            const filtered = allResults.filter(player => 
+                player.user_id.toLowerCase().includes(query)
             );
-            renderTable(filtered);
+            renderTiers(filtered);
         });
 
         loadResults();
