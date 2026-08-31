@@ -24,7 +24,7 @@
             min-height: 100vh;
         }
 
-        /* Шапка сайта как на скриншоте */
+        /* Шапка сайта */
         .header {
             background: var(--panel-bg);
             border: 1px solid var(--border-color);
@@ -46,13 +46,20 @@
         .logo-box {
             width: 54px;
             height: 54px;
-            background: linear-gradient(135deg, #f38ba8, #cba6f7);
+            background: linear-gradient(135deg, #313244, #181825);
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            box-shadow: 0 0 20px rgba(203, 166, 247, 0.3);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 0 20px rgba(137, 180, 250, 0.1);
+        }
+
+        .logo-box img {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 4px rgba(203, 166, 247, 0.5));
         }
 
         .header-title h1 {
@@ -103,15 +110,11 @@
         }
 
         @media (max-width: 1400px) {
-            .tier-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
+            .tier-grid { grid-template-columns: repeat(3, 1fr); }
         }
 
         @media (max-width: 900px) {
-            .tier-grid {
-                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            }
+            .tier-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
         }
 
         .tier-column {
@@ -158,14 +161,8 @@
             overflow-y: auto;
         }
 
-        /* Скроллбар */
-        .tier-content::-webkit-scrollbar {
-            width: 4px;
-        }
-        .tier-content::-webkit-scrollbar-thumb {
-            background: #313244;
-            border-radius: 4px;
-        }
+        .tier-content::-webkit-scrollbar { width: 4px; }
+        .tier-content::-webkit-scrollbar-thumb { background: #313244; border-radius: 4px; }
 
         /* Карточка игрока */
         .player-card {
@@ -177,12 +174,14 @@
             align-items: center;
             justify-content: space-between;
             gap: 10px;
+            cursor: pointer;
             animation: fadeInCard 0.3s ease both;
-            transition: background 0.2s;
+            transition: background 0.2s, transform 0.1s;
         }
 
         .player-card:hover {
             background-color: rgba(30, 33, 48, 0.8);
+            transform: translateY(-1px);
         }
 
         .player-info {
@@ -227,6 +226,136 @@
             padding: 30px 0;
         }
 
+        /* Модальное окно профиля */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal {
+            background: #181a26;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 420px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transform: scale(0.95);
+            transition: transform 0.25s ease;
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+
+        .modal-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            background: #313244;
+        }
+
+        .modal-title-box h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #fff;
+        }
+
+        .modal-title-box p {
+            margin: 4px 0 0 0;
+            font-size: 13px;
+            color: #cba6f7;
+        }
+
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .modal-info-row {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .modal-info-label {
+            color: var(--text-muted);
+        }
+
+        .modal-info-value {
+            color: #e2e8f0;
+            font-weight: 500;
+        }
+
+        .modal-comment-box {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 12px 14px;
+            border-radius: 8px;
+            margin-top: 4px;
+        }
+
+        .modal-comment-title {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .modal-comment-text {
+            font-size: 13px;
+            color: #bac2de;
+            font-style: italic;
+            word-break: break-word;
+        }
+
+        .modal-close-btn {
+            width: 100%;
+            margin-top: 20px;
+            background: #313244;
+            border: none;
+            color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .modal-close-btn:hover {
+            background: #45475a;
+        }
+
         @keyframes fadeInColumn {
             from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
@@ -241,10 +370,13 @@
 </head>
 <body>
 
-    <!-- Шапка тир-листа -->
+    <!-- Шапка сайта -->
     <div class="header">
         <div class="header-left">
-            <div class="logo-box">💎</div>
+            <div class="logo-box">
+                <!-- Кристалл Энда вместо алмаза -->
+                <img src="https://minecraft.wiki/images/End_Crystal_JE2_BE2.png" alt="End Crystal">
+            </div>
             <div class="header-title">
                 <h1>VANILLA</h1>
                 <p>Рейтинг</p>
@@ -276,6 +408,30 @@
         <div class="tier-column">
             <div class="tier-header"><div class="tier-dot"></div> TIER 5</div>
             <div class="tier-content" id="tier-5"><div class="empty-msg">Загрузка...</div></div>
+        </div>
+    </div>
+
+    <!-- Модальное окно профиля игрока -->
+    <div class="modal-overlay" id="player-modal" onclick="closeModal(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <img class="modal-avatar" id="modal-avatar" src="" alt="">
+                <div class="modal-title-box">
+                    <h3 id="modal-nick">Игрок</h3>
+                    <p id="modal-rank">Ранг</p>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-info-row">
+                    <span class="modal-info-label">Проверяющий тестер:</span>
+                    <span class="modal-info-value" id="modal-tester">—</span>
+                </div>
+                <div class="modal-comment-box">
+                    <div class="modal-comment-title">Комментарий к тесту</div>
+                    <div class="modal-comment-text" id="modal-comment">Нет комментариев</div>
+                </div>
+                <button class="modal-close-btn" onclick="closeModalDirect()">Закрыть</button>
+            </div>
         </div>
     </div>
 
@@ -356,7 +512,6 @@
                     const card = document.createElement('div');
                     card.className = 'player-card';
 
-                    // Ссылка на мини-голову майнкрафт скина по нику
                     const avatarUrl = `https://crafatar.com/avatars/${encodeURIComponent(player.user_id)}?size=24&overlay`;
 
                     card.innerHTML = `
@@ -366,9 +521,47 @@
                         </div>
                         <span class="player-rank">${escapeHtml(player.rank_type)}</span>
                     `;
+
+                    // Клик по карточке открывает профиль игрока
+                    card.addEventListener('click', () => openPlayerModal(player));
+
                     container.appendChild(card);
                 });
             }
+        }
+
+        function openPlayerModal(player) {
+            const modalOverlay = document.getElementById('player-modal');
+            const avatarImg = document.getElementById('modal-avatar');
+            const nickEl = document.getElementById('modal-nick');
+            const rankEl = document.getElementById('modal-rank');
+            const testerEl = document.getElementById('modal-tester');
+            const commentEl = document.getElementById('modal-comment');
+
+            avatarImg.src = `https://crafatar.com/avatars/${encodeURIComponent(player.user_id)}?size=48&overlay`;
+            nickEl.textContent = player.user_id;
+            rankEl.textContent = `Ранг: ${player.rank_type}`;
+            testerEl.textContent = player.tester_id || 'Не указан';
+            
+            if (player.comment && player.comment.trim() !== '' && player.comment !== 'Без комментария') {
+                commentEl.textContent = player.comment;
+                commentEl.style.fontStyle = 'italic';
+                commentEl.style.color = '#bac2de';
+            } else {
+                commentEl.textContent = 'Комментарий отсутствует';
+                commentEl.style.fontStyle = 'normal';
+                commentEl.style.color = 'var(--text-muted)';
+            }
+
+            modalOverlay.classList.add('active');
+        }
+
+        function closeModal(e) {
+            document.getElementById('player-modal').classList.remove('active');
+        }
+
+        function closeModalDirect() {
+            document.getElementById('player-modal').classList.remove('active');
         }
 
         function escapeHtml(str) {
