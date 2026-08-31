@@ -3,207 +3,278 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Топ Игроков по TIER</title>
+    <title>VANILLA — Рейтинг</title>
     <style>
+        :root {
+            --bg-color: #0d0f17;
+            --panel-bg: rgba(22, 24, 35, 0.75);
+            --border-color: rgba(137, 180, 250, 0.1);
+            --accent-color: #89b4fa;
+            --text-main: #cdd6f4;
+            --text-muted: #6c7086;
+        }
+
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: #1e1e2e; 
-            color: #fff; 
-            padding: 20px; 
+            background-color: var(--bg-color); 
+            color: var(--text-main); 
+            padding: 20px 40px; 
             margin: 0;
-        }
-        h1 { text-align: center; color: #89b4fa; margin-bottom: 20px; }
-        
-        /* Блок поиска */
-        .search-container {
-            max-width: 500px;
-            margin: 0 auto 25px auto;
-        }
-        .search-input {
-            width: 100%;
-            padding: 12px 16px;
-            font-size: 16px;
-            border-radius: 8px;
-            border: 2px solid #45475a;
-            background-color: #313244;
-            color: #fff;
-            outline: none;
-            box-sizing: border-box;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        }
-        .search-input:focus {
-            border-color: #89b4fa;
-            box-shadow: 0 0 10px rgba(137, 180, 250, 0.2);
+            background-image: radial-gradient(circle at 50% 0%, #1a1c2e 0%, var(--bg-color) 70%);
+            min-height: 100vh;
         }
 
-        /* Контейнер 5 столбцов */
-        .tier-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 15px;
-            align-items: start;
-        }
-
-        @media (max-width: 1100px) {
-            .tier-grid {
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            }
-        }
-
-        /* Стиль каждого TIER-столбца */
-        .tier-column {
-            background-color: #313244;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid #45475a;
-            /* Анимация появления самой колонки */
-            animation: fadeInColumn 0.6s ease-out both;
-        }
-
-        /* Плавная задержка для каждой колонки, чтобы они появлялись по очереди */
-        .tier-column:nth-child(1) { animation-delay: 0.1s; }
-        .tier-column:nth-child(2) { animation-delay: 0.2s; }
-        .tier-column:nth-child(3) { animation-delay: 0.3s; }
-        .tier-column:nth-child(4) { animation-delay: 0.4s; }
-        .tier-column:nth-child(5) { animation-delay: 0.5s; }
-
-        .tier-header {
-            background-color: #45475a;
-            color: #cdd6f4;
-            font-size: 18px;
-            font-weight: bold;
-            text-align: center;
-            padding: 12px;
-            border-bottom: 2px solid #585b70;
-        }
-
-        .tier-content {
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            min-height: 100px;
-        }
-
-        /* Карточка игрока с анимацией появления */
-        .player-card {
-            background-color: #181825;
-            border: 1px solid #45475a;
-            border-radius: 6px;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            /* Анимация */
-            animation: fadeInCard 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
-            transition: transform 0.2s ease, border-color 0.2s ease;
-        }
-
-        /* Легкий эффект при наведении мыши на карточку */
-        .player-card:hover {
-            transform: translateY(-2px;);
-            border-color: #89b4fa;
-        }
-
-        .card-top {
+        /* Шапка сайта как на скриншоте */
+        .header {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo-box {
+            width: 54px;
+            height: 54px;
+            background: linear-gradient(135deg, #f38ba8, #cba6f7);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 0 20px rgba(203, 166, 247, 0.3);
+        }
+
+        .header-title h1 {
+            margin: 0;
+            font-size: 24px;
+            letter-spacing: 1px;
+            color: #fff;
+        }
+
+        .header-title p {
+            margin: 4px 0 0 0;
+            font-size: 14px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Поиск */
+        .search-container {
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 16px;
+            font-size: 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background-color: rgba(15, 17, 26, 0.6);
+            color: #fff;
+            outline: none;
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 10px rgba(137, 180, 250, 0.15);
+        }
+
+        /* 5 Столбцов */
+        .tier-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            align-items: start;
+        }
+
+        @media (max-width: 1400px) {
+            .tier-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .tier-grid {
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            }
+        }
+
+        .tier-column {
+            background-color: var(--panel-bg);
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            animation: fadeInColumn 0.5s ease-out both;
+        }
+
+        .tier-column:nth-child(1) { animation-delay: 0.05s; }
+        .tier-column:nth-child(2) { animation-delay: 0.1s; }
+        .tier-column:nth-child(3) { animation-delay: 0.15s; }
+        .tier-column:nth-child(4) { animation-delay: 0.2s; }
+        .tier-column:nth-child(5) { animation-delay: 0.25s; }
+
+        .tier-header {
+            padding: 16px;
+            font-size: 15px;
+            font-weight: bold;
+            color: #cdd6f4;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tier-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #cba6f7;
+            box-shadow: 0 0 8px #cba6f7;
+        }
+
+        .tier-content {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-height: 200px;
+            max-height: 65vh;
+            overflow-y: auto;
+        }
+
+        /* Скроллбар */
+        .tier-content::-webkit-scrollbar {
+            width: 4px;
+        }
+        .tier-content::-webkit-scrollbar-thumb {
+            background: #313244;
+            border-radius: 4px;
+        }
+
+        /* Карточка игрока */
+        .player-card {
+            background-color: rgba(18, 20, 30, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            animation: fadeInCard 0.3s ease both;
+            transition: background 0.2s;
+        }
+
+        .player-card:hover {
+            background-color: rgba(30, 33, 48, 0.8);
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            overflow: hidden;
+        }
+
+        .player-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            background-color: #313244;
+            flex-shrink: 0;
         }
 
         .player-nick {
-            font-weight: 600;
-            color: #89b4fa;
-            font-size: 15px;
-            word-break: break-word;
+            font-weight: 500;
+            color: #e2e8f0;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .player-rank {
-            font-weight: bold;
-            font-size: 13px;
-            padding: 2px 6px;
-            border-radius: 4px;
-            background-color: #45475a;
-            color: #a6e3a1;
-        }
-
-        .player-tester {
-            font-size: 12px;
-            color: #a6adc8;
-        }
-
-        .player-comment {
-            font-size: 12px;
-            font-style: italic;
-            color: #bac2de;
-            border-top: 1px dashed #45475a;
-            padding-top: 4px;
-            margin-top: 2px;
-            word-break: break-word;
+            font-weight: 700;
+            font-size: 11px;
+            padding: 3px 6px;
+            border-radius: 6px;
+            background-color: rgba(203, 166, 247, 0.15);
+            color: #cba6f7;
+            flex-shrink: 0;
+            letter-spacing: 0.5px;
         }
 
         .empty-msg {
             text-align: center;
-            color: #6c7086;
-            font-size: 14px;
-            padding: 20px 0;
+            color: var(--text-muted);
+            font-size: 13px;
+            padding: 30px 0;
         }
 
-        /* Ключевые кадры анимаций */
         @keyframes fadeInColumn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes fadeInCard {
-            from {
-                opacity: 0;
-                transform: scale(0.95) translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
+            from { opacity: 0; transform: scale(0.97); }
+            to { opacity: 1; transform: scale(1); }
         }
     </style>
-    <!-- Подключаем официальный клиент Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-    <h1>🏆 Сетка игроков по TIER</h1>
-
-    <!-- Поле поиска -->
-    <div class="search-container">
-        <input type="text" id="search-input" class="search-input" placeholder="🔍 Поиск по нику...">
+    <!-- Шапка тир-листа -->
+    <div class="header">
+        <div class="header-left">
+            <div class="logo-box">💎</div>
+            <div class="header-title">
+                <h1>VANILLA</h1>
+                <p>Рейтинг</p>
+            </div>
+        </div>
+        <div class="search-container">
+            <input type="text" id="search-input" class="search-input" placeholder="🔍 Поиск по нику...">
+        </div>
     </div>
 
-    <!-- 5 Столбцов -->
+    <!-- 5 Столбцов TIER -->
     <div class="tier-grid">
         <div class="tier-column">
-            <div class="tier-header">TIER 1</div>
+            <div class="tier-header"><div class="tier-dot"></div> TIER 1</div>
             <div class="tier-content" id="tier-1"><div class="empty-msg">Загрузка...</div></div>
         </div>
         <div class="tier-column">
-            <div class="tier-header">TIER 2</div>
+            <div class="tier-header"><div class="tier-dot"></div> TIER 2</div>
             <div class="tier-content" id="tier-2"><div class="empty-msg">Загрузка...</div></div>
         </div>
         <div class="tier-column">
-            <div class="tier-header">TIER 3</div>
+            <div class="tier-header"><div class="tier-dot"></div> TIER 3</div>
             <div class="tier-content" id="tier-3"><div class="empty-msg">Загрузка...</div></div>
         </div>
         <div class="tier-column">
-            <div class="tier-header">TIER 4</div>
+            <div class="tier-header"><div class="tier-dot"></div> TIER 4</div>
             <div class="tier-content" id="tier-4"><div class="empty-msg">Загрузка...</div></div>
         </div>
         <div class="tier-column">
-            <div class="tier-header">TIER 5</div>
+            <div class="tier-header"><div class="tier-dot"></div> TIER 5</div>
             <div class="tier-content" id="tier-5"><div class="empty-msg">Загрузка...</div></div>
         </div>
     </div>
@@ -238,7 +309,7 @@
             } catch (error) {
                 console.error('Ошибка загрузки данных:', error);
                 for (let i = 1; i <= 5; i++) {
-                    document.getElementById(`tier-${i}`).innerHTML = '<div class="empty-msg" style="color:#f38ba8;">Ошибка</div>';
+                    document.getElementById(`tier-${i}`).innerHTML = '<div class="empty-msg" style="color:#f38ba8;">Ошибка загрузки</div>';
                 }
             }
         }
@@ -285,17 +356,15 @@
                     const card = document.createElement('div');
                     card.className = 'player-card';
 
-                    const commentHTML = player.comment && player.comment !== 'Без комментария' 
-                        ? `<div class="player-comment">${escapeHtml(player.comment)}</div>` 
-                        : '';
+                    // Ссылка на мини-голову майнкрафт скина по нику
+                    const avatarUrl = `https://crafatar.com/avatars/${encodeURIComponent(player.user_id)}?size=24&overlay`;
 
                     card.innerHTML = `
-                        <div class="card-top">
-                            <span class="player-nick">${escapeHtml(player.user_id)}</span>
-                            <span class="player-rank">${escapeHtml(player.rank_type)}</span>
+                        <div class="player-info">
+                            <img class="player-avatar" src="${avatarUrl}" alt="" onerror="this.style.display='none'">
+                            <span class="player-nick" title="${escapeHtml(player.user_id)}">${escapeHtml(player.user_id)}</span>
                         </div>
-                        <div class="player-tester">Тестер: ${escapeHtml(player.tester_id)}</div>
-                        ${commentHTML}
+                        <span class="player-rank">${escapeHtml(player.rank_type)}</span>
                     `;
                     container.appendChild(card);
                 });
