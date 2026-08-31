@@ -1232,3 +1232,13 @@ LOGIN
 */
 
 client.login(process.env.DISCORD_TOKEN).catch(console.error);
+const express = require('express');
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Отдаем файлы сайта из папки public
+app.use(express.static('public'));
+
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Сайт работает на порту ${PORT}`);
+});
