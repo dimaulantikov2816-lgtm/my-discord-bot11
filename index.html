@@ -175,6 +175,48 @@
         <div class="tier-column"><div class="tier-header"><div class="tier-dot"></div> TIER 5</div><div class="tier-content" id="tier-5"><div class="empty-msg">Загрузка...</div></div></div>
     </div>
 
+    <!-- Модальное окно поиска -->
+    <div class="modal-overlay" id="search-modal" onclick="closeModalDirect('search-modal')">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-title-box" style="width: 100%;">
+                    <h3>Поиск игрока</h3>
+                    <p>Введите никнейм для фильтрации результатов</p>
+                </div>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="search-input" class="search-modal-input" placeholder="Никнейм..." oninput="handleSearch(this.value)">
+                <div class="history-list" id="search-results-list" style="max-height: 280px; margin-top: 10px;">
+                    <div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 15px;">Начните ввод для поиска</div>
+                </div>
+                <button class="modal-close-btn" onclick="closeModalDirect('search-modal')">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно просмотра публичного профиля игрока -->
+    <div class="modal-overlay" id="player-profile-modal" onclick="closeModalDirect('player-profile-modal')">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <img class="modal-avatar" id="view-player-avatar" src="" alt="">
+                <div class="modal-title-box">
+                    <h3 id="view-player-nick">Игрок</h3>
+                    <p id="view-player-rank">Тир: —</p>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div style="background: rgba(5,6,9,0.5); padding: 12px; border-radius: 8px;">
+                    <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">История тестирования</div>
+                    <div class="history-list" id="view-player-history">
+                        <div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 10px;">Загрузка...</div>
+                    </div>
+                </div>
+                <button class="modal-close-btn" onclick="closeModalDirect('player-profile-modal')">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно авторизованного пользователя -->
     <div class="modal-overlay" id="user-profile-modal" onclick="closeModalDirect('user-profile-modal')">
         <div class="modal" onclick="event.stopPropagation()">
             <div class="modal-header">
@@ -198,6 +240,7 @@
         </div>
     </div>
 
+    <!-- Модальное окно привязки никнейма -->
     <div class="modal-overlay" id="nick-modal">
         <div class="modal" onclick="event.stopPropagation()">
             <div class="modal-header">
@@ -284,6 +327,75 @@
                 console.error('Ошибка инициализации:', e);
             }
         };
+
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+                e.preventDefault();
+                openSearchModal();
+            }
+        });
+
+        function openSearchModal() {
+            document.getElementById('search-modal').classList.add('active');
+            const input = document.getElementById('search-input');
+            input.value = '';
+            input.focus();
+            handleSearch('');
+        }
+
+        function handleSearch(query) {
+            const list = document.getElementById('search-results-list');
+            const cleanQuery = query.trim().toLowerCase();
+
+            if (!allResults.length) {
+                list.innerHTML = '<div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 15px;">Данные отсутствуют</div>';
+                return;
+            }
+
+            const filtered = allResults.filter(p => p.user_id && p.user_id.toLowerCase().includes(cleanQuery));
+
+            if (filtered.length === 0) {
+                list.innerHTML = '<div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 15px;">Игроки не найдены</div>';
+                return;
+            }
+
+            list.innerHTML = filtered.map(player => `
+                <div class="history-item" style="cursor: pointer;" onclick="closeModalDirect('search-modal'); openPlayerProfile('${escapeHtml(player.user_id)}')">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <img src="https://mc-heads.net/avatar/${encodeURIComponent(player.user_id)}/24" style="width: 24px; height: 24px; border-radius: 4px;" alt="">
+                        <span>${escapeHtml(player.user_id)}</span>
+                    </div>
+                    <span class="history-rank">${escapeHtml(player.rank_type)}</span>
+                </div>
+            `).join('');
+        }
+
+        async function openPlayerProfile(nick) {
+            document.getElementById('view-player-nick').textContent = nick;
+            document.getElementById('view-player-avatar').src = `https://mc-heads.net/avatar/${encodeURIComponent(nick)}/64`;
+
+            const historyContainer = document.getElementById('view-player-history');
+            historyContainer.innerHTML = '<div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 10px;">Загрузка...</div>';
+
+            document.getElementById('player-profile-modal').classList.add('active');
+
+            const playerRecords = allResults.filter(r => r.user_id && r.user_id.toLowerCase() === nick.toLowerCase());
+
+            if (playerRecords.length > 0) {
+                const latest = playerRecords[playerRecords.length - 1];
+                document.getElementById('view-player-rank').textContent = `Тир: ${latest.rank_type}`;
+
+                historyContainer.innerHTML = playerRecords.map(item => `
+                    <div class="history-item">
+                        <span class="history-rank">${escapeHtml(item.rank_type)}</span>
+                        <span style="color: var(--text-muted); font-size: 12px;">Тестер: ${escapeHtml(item.tester_id || '—')}</span>
+                    </div>
+                `).join('');
+            } else {
+                document.getElementById('view-player-rank').textContent = 'Тир: Нет данных';
+                historyContainer.innerHTML = '<div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 10px;">Записи отсутствуют</div>';
+            }
+        }
 
         function handleAuthClick() {
             if (currentUser) {
@@ -442,6 +554,7 @@
                 tiers[i].forEach(player => {
                     const card = document.createElement('div');
                     card.className = 'player-card';
+                    card.onclick = () => openPlayerProfile(player.user_id);
                     card.innerHTML = `
                         <div class="player-info">
                             <img class="player-avatar" src="https://mc-heads.net/avatar/${encodeURIComponent(player.user_id)}/32" alt="">
@@ -466,6 +579,8 @@
             Object.entries(counts).forEach(([testerName, count]) => {
                 const badge = document.createElement('div');
                 badge.className = 'tester-badge';
+                badge.style.cursor = 'pointer';
+                badge.onclick = () => openPlayerProfile(testerName);
                 badge.innerHTML = `
                     <img class="tester-avatar" src="https://mc-heads.net/avatar/${encodeURIComponent(testerName)}/24" alt="">
                     <span class="tester-name">${escapeHtml(testerName)}</span>
