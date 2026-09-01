@@ -175,7 +175,6 @@
         <div class="tier-column"><div class="tier-header"><div class="tier-dot"></div> TIER 5</div><div class="tier-content" id="tier-5"><div class="empty-msg">Загрузка...</div></div></div>
     </div>
 
-    <!-- Модальное окно профиля авторизованного пользователя -->
     <div class="modal-overlay" id="user-profile-modal" onclick="closeModalDirect('user-profile-modal')">
         <div class="modal" onclick="event.stopPropagation()">
             <div class="modal-header">
@@ -199,7 +198,6 @@
         </div>
     </div>
 
-    <!-- Модальное окно привязки/смены никнейма -->
     <div class="modal-overlay" id="nick-modal">
         <div class="modal" onclick="event.stopPropagation()">
             <div class="modal-header">
@@ -211,7 +209,6 @@
             <div class="modal-body">
                 <input type="text" id="minecraft-nick-input" class="search-modal-input" placeholder="Например: Notch">
                 
-                <!-- Блок с предупреждением о лицензии -->
                 <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 8px; padding: 10px 12px; margin-top: 4px;">
                     <div style="font-size: 11px; font-weight: bold; color: #f87171; text-transform: uppercase; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
@@ -244,6 +241,12 @@
             'HT5': 5, 'LT5': 5
         };
 
+        function getDiscordName(user) {
+            if (!user) return 'Пользователь';
+            const meta = user.user_metadata || {};
+            return meta.full_name || meta.name || meta.custom_claims?.global_name || user.email?.split('@')[0] || 'Игрок Discord';
+        }
+
         window.onload = async function() {
             try {
                 supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
@@ -256,23 +259,22 @@
 
                 loadResults();
 
-                const { data: { session } } = await supabaseClient.auth.getSession();
-                
-                if (session && session.user) {
-                    currentUser = session.user;
-                    await checkUserProfile();
-                }
-
                 supabaseClient.auth.onAuthStateChange(async (event, session) => {
-                    if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session) {
+                    if (session && session.user) {
                         currentUser = session.user;
                         await checkUserProfile();
-                    } else if (event === 'SIGNED_OUT') {
+                    } else {
                         currentUser = null;
                         currentMinecraftNick = null;
                         updateAuthButton(null);
                     }
                 });
+
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (session && session.user) {
+                    currentUser = session.user;
+                    await checkUserProfile();
+                }
 
                 if (window.location.hash.includes('access_token')) {
                     window.history.replaceState(null, '', window.location.pathname);
@@ -308,10 +310,10 @@
         async function checkUserProfile() {
             if (!currentUser) return;
 
-            const discordName = currentUser.user_metadata?.full_name || currentUser.user_metadata?.custom_claims?.global_name || 'Игрок Discord';
+            const discordName = getDiscordName(currentUser);
 
             try {
-                const { data, error } = await supabaseClient
+                const { data } = await supabaseClient
                     .from('profiles')
                     .select('minecraft_nick')
                     .eq('id', currentUser.id)
@@ -378,7 +380,7 @@
         async function openUserProfileModal() {
             if (!currentUser) return;
 
-            const nick = currentMinecraftNick || currentUser.user_metadata?.full_name || 'Профиль';
+            const nick = currentMinecraftNick || getDiscordName(currentUser);
             document.getElementById('user-profile-nick').textContent = nick;
             document.getElementById('user-profile-avatar').src = `https://mc-heads.net/avatar/${encodeURIComponent(nick)}/64`;
 
