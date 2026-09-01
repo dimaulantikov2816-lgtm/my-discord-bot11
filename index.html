@@ -71,12 +71,13 @@
         .discord-btn {
             background: linear-gradient(135deg, #4752C4, #363db2);
             border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px;
-            width: 54px; height: 54px; display: flex; align-items: center;
+            height: 54px; padding: 0 18px; display: flex; align-items: center;
             justify-content: center; cursor: pointer; text-decoration: none;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7); transition: all 0.25s ease;
+            color: #fff; font-weight: bold; font-size: 14px; gap: 10px; border: none;
         }
-        .discord-btn:hover { transform: translateY(-2px); }
-        .discord-btn svg { width: 26px; height: 26px; fill: #ffffff; }
+        .discord-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        .discord-btn svg { width: 22px; height: 22px; fill: #ffffff; flex-shrink: 0; }
 
         .search-trigger {
             background-color: rgba(10, 11, 16, 0.75);
@@ -138,7 +139,7 @@
         .search-modal, .modal { background: #0d0f17; border: 1px solid var(--border-color); border-radius: 16px; width: 100%; max-width: 500px; padding: 24px; box-shadow: var(--dark-glow); }
         .search-modal-input-box { position: relative; display: flex; align-items: center; }
         .search-modal-input-box svg { position: absolute; left: 16px; width: 18px; height: 18px; fill: var(--text-muted); }
-        .search-modal-input { width: 100%; background: rgba(5, 6, 9, 0.8); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px 45px 14px 48px; font-size: 15px; color: #fff; outline: none; box-sizing: border-box; }
+        .search-modal-input { width: 100%; background: rgba(5, 6, 9, 0.8); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px 16px 14px 48px; font-size: 15px; color: #fff; outline: none; box-sizing: border-box; }
 
         .modal-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
         .modal-avatar { width: 48px; height: 48px; border-radius: 8px; background: #181924; object-fit: cover; }
@@ -149,13 +150,14 @@
         .modal-comment-box { background: rgba(5, 6, 9, 0.5); padding: 12px 14px; border-radius: 8px; margin-top: 4px; }
         .modal-comment-title { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; }
         .modal-comment-text { 
-    font-size: 13px; 
-    color: #bac2de; 
-    font-style: italic; 
-    word-break: break-word; 
-    white-space: pre-wrap; /* Сохраняет переносы строк (в столбик) и пробелы */
-}
-        .modal-close-btn { width: 100%; margin-top: 20px; background: #181924; border: 1px solid var(--border-color); color: #fff; padding: 10px; border-radius: 8px; font-size: 14px; cursor: pointer; }
+            font-size: 13px; 
+            color: #bac2de; 
+            font-style: italic; 
+            word-break: break-word; 
+            white-space: pre-wrap; 
+        }
+        .modal-close-btn { width: 100%; margin-top: 20px; background: #181924; border: 1px solid var(--border-color); color: #fff; padding: 10px; border-radius: 8px; font-size: 14px; cursor: pointer; transition: 0.2s; }
+        .modal-close-btn:hover { background: #222536; }
     </style>
 </head>
 <body>
@@ -176,9 +178,11 @@
                 <span>Поиск игрока...</span>
                 <kbd>Ctrl K</kbd>
             </div>
-            <a href="https://discord.gg/PbsTxqNKfF" target="_blank" class="discord-btn">
+            
+            <button id="auth-btn" class="discord-btn" onclick="handleAuth()">
                 <svg viewBox="0 0 127.14 96.36"><path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6,5.4,80.21h0A105.73,105.73,0,0,0,32.79,93.64,77.11,77.11,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.81,8.39,105.69,105.69,0,0,0,27.39-13.43c8.11-26.24-1.72-50.05-18.15-72.16ZM42.45,65.69C36.18,65.69,31,60,31,53s5.18-12.72,11.45-12.72S53.9,46,53.88,53,48.72,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5.18-12.72,11.45-12.72S96.15,46,96.13,53,91,65.69,84.69,65.69Z"/></svg>
-            </a>
+                <span id="auth-btn-text">Вход</span>
+            </button>
         </div>
     </div>
 
@@ -205,6 +209,7 @@
         <div class="tier-column"><div class="tier-header"><div class="tier-dot"></div> TIER 5</div><div class="tier-content" id="tier-5"><div class="empty-msg">Загрузка...</div></div></div>
     </div>
 
+    <!-- Модальное окно профиля игрока -->
     <div class="modal-overlay" id="player-modal" onclick="closeModal(event)">
         <div class="modal" onclick="event.stopPropagation()">
             <div class="modal-header">
@@ -228,12 +233,29 @@
         </div>
     </div>
 
+    <!-- Модальное окно привязки никнейма -->
+    <div class="modal-overlay" id="nick-modal">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-title-box">
+                    <h3>Привязка аккаунта</h3>
+                    <p>Введите ваш игровой никнейм Minecraft</p>
+                </div>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="minecraft-nick-input" class="search-modal-input" placeholder="Например: Notch" style="padding-left: 16px;">
+                <button class="modal-close-btn" style="background: #4752C4;" onclick="saveMinecraftNick()">Сохранить и изменить ник</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const SUPABASE_URL = 'https://cyhsopkvllsliuazldlm.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN5aHNvcGt2bGxzbGl1YXpsZGxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxOTI1MjIsImV4cCI6MjEwMzc2ODUyMn0.ypkeu5pPJc7jZaOzFURSmQeomdhvUlseQLsowJc_4nQ';
 
         let supabaseClient;
         let allResults = [];
+        let currentUser = null;
 
         const TIER_MAP = {
             'HT1': 1, 'LT1': 1,
@@ -243,14 +265,101 @@
             'HT5': 5, 'LT5': 5
         };
 
-        window.onload = function() {
+        window.onload = async function() {
             try {
                 supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                 loadResults();
+
+                // Проверка текущей сессии
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (session) {
+                    currentUser = session.user;
+                    await checkUserProfile();
+                }
+
+                // Отслеживание изменений авторизации
+                supabaseClient.auth.onAuthStateChange(async (event, session) => {
+                    if (event === 'SIGNED_IN') {
+                        currentUser = session.user;
+                        await checkUserProfile();
+                    } else if (event === 'SIGNED_OUT') {
+                        currentUser = null;
+                        updateAuthButton(null);
+                    }
+                });
+
             } catch (e) {
                 showError('Ошибка скрипта Supabase');
             }
         };
+
+        // Вход / Выход через Discord
+        async function handleAuth() {
+            if (currentUser) {
+                await supabaseClient.auth.signOut();
+                location.reload();
+            } else {
+                await supabaseClient.auth.signInWithOAuth({
+                    provider: 'discord',
+                    options: {
+                        redirectTo: window.location.href
+                    }
+                });
+            }
+        }
+
+        // Проверка наличия профиля и никнейма
+        async function checkUserProfile() {
+            if (!currentUser) return;
+
+            const { data } = await supabaseClient
+                .from('profiles')
+                .select('minecraft_nick')
+                .eq('id', currentUser.id)
+                .maybeSingle();
+
+            if (!data || !data.minecraft_nick) {
+                document.getElementById('nick-modal').classList.add('active');
+            } else {
+                updateAuthButton(data.minecraft_nick);
+            }
+        }
+
+        // Сохранение Minecraft-ника в БД
+        async function saveMinecraftNick() {
+            const nickInput = document.getElementById('minecraft-nick-input').value.trim();
+            if (!nickInput) return alert('Пожалуйста, введите никнейм!');
+
+            const discordId = currentUser.user_metadata.provider_id || currentUser.app_metadata.provider_id;
+
+            const { error } = await supabaseClient
+                .from('profiles')
+                .upsert({
+                    id: currentUser.id,
+                    discord_id: String(discordId),
+                    minecraft_nick: nickInput,
+                    updated_at: new Date().toISOString()
+                });
+
+            if (error) {
+                alert('Ошибка сохранения: ' + error.message);
+            } else {
+                document.getElementById('nick-modal').classList.remove('active');
+                updateAuthButton(nickInput);
+            }
+        }
+
+        function updateAuthButton(nick) {
+            const btnText = document.getElementById('auth-btn-text');
+            const btn = document.getElementById('auth-btn');
+            if (nick) {
+                btnText.innerText = `👤 ${nick} (Выйти)`;
+                btn.style.background = '#2b2d31';
+            } else {
+                btnText.innerText = 'Вход';
+                btn.style.background = 'linear-gradient(135deg, #4752C4, #363db2)';
+            }
+        }
 
         async function loadResults() {
             try {
