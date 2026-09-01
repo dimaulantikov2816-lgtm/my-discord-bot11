@@ -149,12 +149,12 @@
         .modal-comment-box { background: rgba(5, 6, 9, 0.5); padding: 12px 14px; border-radius: 8px; margin-top: 4px; }
         .modal-comment-title { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; }
         .modal-comment-text { 
-    font-size: 13px; 
-    color: #bac2de; 
-    font-style: italic; 
-    word-break: break-word; 
-    white-space: pre-wrap; /* Сохраняет переносы строк (в столбик) и пробелы */
-}
+            font-size: 13px; 
+            color: #bac2de; 
+            font-style: italic; 
+            word-break: break-word; 
+            white-space: pre-wrap; 
+        }
         .modal-close-btn { width: 100%; margin-top: 20px; background: #181924; border: 1px solid var(--border-color); color: #fff; padding: 10px; border-radius: 8px; font-size: 14px; cursor: pointer; }
     </style>
 </head>
@@ -215,14 +215,6 @@
                 </div>
             </div>
             <div class="modal-body">
-                <div class="modal-info-row">
-                    <span class="modal-info-label">Проверяющий тестер:</span>
-                    <span class="modal-info-value" id="modal-tester">—</span>
-                </div>
-                <div class="modal-comment-box">
-                    <div class="modal-comment-title">Комментарий к тесту</div>
-                    <div class="modal-comment-text" id="modal-comment">Нет комментариев</div>
-                </div>
                 <button class="modal-close-btn" onclick="closeModalDirect()">Закрыть</button>
             </div>
         </div>
@@ -234,6 +226,7 @@
 
         let supabaseClient;
         let allResults = [];
+        let groupedPlayers = [];
 
         const TIER_MAP = {
             'HT1': 1, 'LT1': 1,
@@ -264,11 +257,58 @@
                 }
 
                 allResults = data || [];
-                renderTiers(allResults);
+                groupedPlayers = groupPlayersByNick(allResults);
+                
+                renderTiers(groupedPlayers);
                 renderTesters(allResults);
             } catch (error) {
                 showError('Ошибка соединения');
             }
+        }
+
+        function groupPlayersByNick(data) {
+            const map = {};
+
+            data.forEach(item => {
+                const rawNick = item.user_id || '';
+                const lowerNick = rawNick.toLowerCase();
+
+                if (!map[lowerNick]) {
+                    map[lowerNick] = {
+                        displayNick: rawNick,
+                        tests: []
+                    };
+                }
+                map[lowerNick].tests.push(item);
+            });
+
+            const result = [];
+            Object.values(map).forEach(group => {
+                group.tests.sort((a, b) => {
+                    const rankA = (a.rank_type || '').toUpperCase();
+                    const rankB = (b.rank_type || '').toUpperCase();
+                    const tierA = TIER_MAP[rankA] || 99;
+                    const tierB = TIER_MAP[rankB] || 99;
+
+                    if (tierA !== tierB) return tierA - tierB;
+                    const isHT_A = rankA.startsWith('HT');
+                    const isHT_B = rankB.startsWith('HT');
+                    if (isHT_A && !isHT_B) return -1;
+                    if (!isHT_A && isHT_B) return 1;
+                    return 0;
+                });
+
+                const bestRecord = group.tests[0];
+                result.push({
+                    user_id: bestRecord.user_id,
+                    rank_type: bestRecord.rank_type,
+                    tester_id: bestRecord.tester_id,
+                    comment: bestRecord.comment,
+                    allTests: group.tests
+                });
+            });
+
+            return result;
         }
 
         function showError(msg) {
@@ -293,14 +333,14 @@
             });
         }
 
-        function renderTiers(data) {
+        function renderTiers(playersList) {
             for (let i = 1; i <= 5; i++) {
                 document.getElementById(`tier-${i}`).innerHTML = '';
             }
 
             const tiers = { 1: [], 2: [], 3: [], 4: [], 5: [] };
 
-            data.forEach(player => {
+            playersList.forEach(player => {
                 const rank = player.rank_type ? player.rank_type.toUpperCase() : '';
                 const tierNum = TIER_MAP[rank];
                 if (tierNum) {
@@ -407,7 +447,7 @@
                 return;
             }
 
-            const filtered = allResults.filter(player => (player.user_id || '').toLowerCase().includes(query));
+            const filtered = groupedPlayers.filter(player => (player.user_id || '').toLowerCase().includes(query));
 
             if (filtered.length === 0) {
                 container.innerHTML = `<div class="search-modal-empty"><span>Игроки не найдены</span></div>`;
@@ -439,19 +479,38 @@
             const modalOverlay = document.getElementById('player-modal');
             document.getElementById('modal-avatar').src = `https://mc-heads.net/avatar/${encodeURIComponent(player.user_id)}/64`;
             document.getElementById('modal-nick').textContent = player.user_id;
-            document.getElementById('modal-rank').textContent = `Ранг: ${player.rank_type}`;
-            document.getElementById('modal-tester').textContent = player.tester_id || 'Не указан';
+            document.getElementById('modal-rank').textContent = `Всего тестов: ${player.allTests.length}`;
+
+            const modalBody = modalOverlay.querySelector('.modal-body');
             
-            const commentEl = document.getElementById('modal-comment');
-            if (player.comment && player.comment.trim() !== '' && player.comment !== 'Без комментария') {
-                commentEl.textContent = player.comment;
-                commentEl.style.fontStyle = 'italic';
-                commentEl.style.color = '#bac2de';
-            } else {
-                commentEl.textContent = 'Комментарий отсутствует';
-                commentEl.style.fontStyle = 'normal';
-                commentEl.style.color = 'var(--text-muted)';
-            }
+            let testsHtml = '';
+            player.allTests.forEach((test, index) => {
+                const commentText = (test.comment && test.comment.trim() !== '' && test.comment !== 'Без комментария') 
+                    ? escapeHtml(test.comment) 
+                    : 'Комментарий отсутствует';
+                
+                const isItalic = commentText !== 'Комментарий отсутствует';
+
+                testsHtml += `
+                    <div style="background: rgba(5, 6, 9, 0.7); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; margin-bottom: 8px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span style="font-size: 13px; font-weight: bold; color: var(--accent-color);">Тест #${index + 1} (${escapeHtml(test.rank_type)})</span>
+                            <span style="font-size: 12px; color: var(--text-muted);">Тестер: ${escapeHtml(test.tester_id || 'Не указан')}</span>
+                        </div>
+                        <div class="modal-comment-box" style="margin-top: 0;">
+                            <div class="modal-comment-title">Комментарий</div>
+                            <div class="modal-comment-text" style="font-style: ${isItalic ? 'italic' : 'normal'}; color: ${isItalic ? '#bac2de' : 'var(--text-muted)'};">${commentText}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            modalBody.innerHTML = `
+                <div style="max-height: 50vh; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 4px;">
+                    ${testsHtml}
+                </div>
+                <button class="modal-close-btn" onclick="closeModalDirect()">Закрыть</button>
+            `;
 
             modalOverlay.classList.add('active');
         }
