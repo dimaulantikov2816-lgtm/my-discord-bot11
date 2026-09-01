@@ -14,7 +14,6 @@
             --text-main: #cdd6f4;
             --text-muted: #6c7086;
             --dark-glow: 0 10px 30px rgba(0, 0, 0, 0.9), 0 0 20px rgba(0, 0, 0, 0.7);
-            --subtle-glow: 0 4px 20px rgba(0, 0, 0, 0.6);
         }
 
         body { 
@@ -24,7 +23,6 @@
             padding: 20px 40px; 
             margin: 0;
             min-height: 100vh;
-            position: relative;
         }
 
         body::before {
@@ -49,20 +47,20 @@
             width: 54px; height: 54px; background: rgba(18, 20, 28, 0.9);
             border-radius: 12px; display: flex; align-items: center;
             justify-content: center; border: 1px solid var(--border-color);
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.8); overflow: hidden;
+            overflow: hidden;
         }
         .logo-box img { width: 100%; height: 100%; object-fit: cover; }
-        .header-title h1 { margin: 0; font-size: 24px; letter-spacing: 1.5px; color: #fff; }
-        .header-title p { margin: 4px 0 0 0; font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; }
+        .header-title h1 { margin: 0; font-size: 24px; color: #fff; }
+        .header-title p { margin: 4px 0 0 0; font-size: 13px; color: var(--text-muted); text-transform: uppercase; }
 
         .header-right { display: flex; align-items: center; gap: 15px; }
         .discord-btn {
             background: linear-gradient(135deg, #4752C4, #363db2);
-            border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px;
+            border: none; border-radius: 12px;
             height: 54px; padding: 0 18px; display: flex; align-items: center;
             justify-content: center; cursor: pointer; text-decoration: none;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7); transition: all 0.25s ease;
-            color: #fff; font-weight: bold; font-size: 14px; gap: 10px; border: none;
+            color: #fff; font-weight: bold; font-size: 14px; gap: 10px;
+            transition: all 0.25s ease;
         }
         .discord-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
         .discord-btn svg { width: 22px; height: 22px; fill: #ffffff; flex-shrink: 0; }
@@ -71,7 +69,7 @@
             background-color: rgba(10, 11, 16, 0.75);
             border: 1px solid var(--border-color); border-radius: 12px;
             padding: 0 16px; height: 54px; display: flex; align-items: center;
-            gap: 12px; cursor: pointer; width: 240px; transition: all 0.25s ease;
+            gap: 12px; cursor: pointer; width: 240px;
         }
         .search-trigger span { color: var(--text-muted); font-size: 14px; flex-grow: 1; }
         .search-trigger kbd { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); padding: 2px 6px; border-radius: 6px; font-size: 11px; color: var(--text-muted); }
@@ -81,7 +79,7 @@
             border-radius: 16px; padding: 16px 24px; margin-bottom: 30px;
             backdrop-filter: blur(12px); box-shadow: var(--dark-glow);
         }
-        .testers-title { font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 12px; font-weight: 600; }
+        .testers-title { font-size: 12px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px; font-weight: 600; }
         .testers-grid { display: flex; flex-wrap: wrap; gap: 12px; }
         .tester-badge {
             background: rgba(8, 9, 13, 0.6); border: 1px solid rgba(255, 255, 255, 0.04);
@@ -117,38 +115,26 @@
 
         .empty-msg { text-align: center; color: var(--text-muted); font-size: 13px; padding: 30px 0; }
 
-        .search-modal-overlay, .modal-overlay {
+        .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px);
             display: flex; align-items: center; justify-content: center; z-index: 1000;
             opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
         }
-        .search-modal-overlay.active, .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        .search-modal, .modal { background: #0d0f17; border: 1px solid var(--border-color); border-radius: 16px; width: 100%; max-width: 500px; padding: 24px; box-shadow: var(--dark-glow); }
-        .search-modal-input-box { position: relative; display: flex; align-items: center; }
-        .search-modal-input-box svg { position: absolute; left: 16px; width: 18px; height: 18px; fill: var(--text-muted); }
-        .search-modal-input { width: 100%; background: rgba(5, 6, 9, 0.8); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px 16px 14px 48px; font-size: 15px; color: #fff; outline: none; box-sizing: border-box; }
-
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal { background: #0d0f17; border: 1px solid var(--border-color); border-radius: 16px; width: 100%; max-width: 500px; padding: 24px; box-shadow: var(--dark-glow); }
         .modal-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
         .modal-avatar { width: 48px; height: 48px; border-radius: 8px; background: #181924; object-fit: cover; }
         .modal-title-box h3 { margin: 0; font-size: 18px; color: #fff; }
         .modal-title-box p { margin: 4px 0 0 0; font-size: 13px; color: var(--accent-color); }
         .modal-body { display: flex; flex-direction: column; gap: 12px; }
-        .modal-info-row { display: flex; justify-content: space-between; background: rgba(5, 6, 9, 0.5); padding: 10px 14px; border-radius: 8px; font-size: 14px; }
-        .modal-comment-box { background: rgba(5, 6, 9, 0.5); padding: 12px 14px; border-radius: 8px; margin-top: 4px; }
-        .modal-comment-title { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; }
-        .modal-comment-text { 
-            font-size: 13px; color: #bac2de; font-style: italic; 
-            word-break: break-word; white-space: pre-wrap; 
-        }
-        .modal-close-btn { width: 100%; margin-top: 15px; background: #181924; border: 1px solid var(--border-color); color: #fff; padding: 10px; border-radius: 8px; font-size: 14px; cursor: pointer; transition: 0.2s; }
+        .modal-close-btn { width: 100%; margin-top: 10px; background: #181924; border: 1px solid var(--border-color); color: #fff; padding: 10px; border-radius: 8px; font-size: 14px; cursor: pointer; }
         .modal-close-btn:hover { background: #222536; }
 
-        /* Стили для истории тиров в профиле */
+        .search-modal-input { width: 100%; background: rgba(5, 6, 9, 0.8); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; font-size: 15px; color: #fff; outline: none; box-sizing: border-box; }
         .history-list { display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto; margin-top: 5px; }
         .history-item { background: rgba(5, 6, 9, 0.6); border: 1px solid rgba(255, 255, 255, 0.04); padding: 10px 14px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
         .history-rank { font-weight: bold; color: var(--accent-color); }
-        .history-tester { color: var(--text-muted); font-size: 12px; }
     </style>
 </head>
 <body>
@@ -165,7 +151,6 @@
         </div>
         <div class="header-right">
             <div class="search-trigger" onclick="openSearchModal()">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 <span>Поиск игрока...</span>
                 <kbd>Ctrl K</kbd>
             </div>
@@ -182,46 +167,12 @@
         <div class="testers-grid" id="testers-grid"><span style="color: var(--text-muted); font-size: 13px;">Загрузка тестеров...</span></div>
     </div>
 
-    <div class="search-modal-overlay" id="search-modal" onclick="closeSearchModal(event)">
-        <div class="search-modal" onclick="event.stopPropagation()">
-            <div class="search-modal-input-box">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                <input type="text" id="modal-search-input" class="search-modal-input" placeholder="Поиск игрока..." autofocus>
-            </div>
-            <div id="search-modal-results" style="max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; margin-top: 15px;"></div>
-        </div>
-    </div>
-
     <div class="tier-grid">
         <div class="tier-column"><div class="tier-header"><div class="tier-dot"></div> TIER 1</div><div class="tier-content" id="tier-1"><div class="empty-msg">Загрузка...</div></div></div>
         <div class="tier-column"><div class="tier-header"><div class="tier-dot"></div> TIER 2</div><div class="tier-content" id="tier-2"><div class="empty-msg">Загрузка...</div></div></div>
         <div class="tier-column"><div class="tier-header"><div class="tier-dot"></div> TIER 3</div><div class="tier-content" id="tier-3"><div class="empty-msg">Загрузка...</div></div></div>
         <div class="tier-column"><div class="tier-header"><div class="tier-dot"></div> TIER 4</div><div class="tier-content" id="tier-4"><div class="empty-msg">Загрузка...</div></div></div>
         <div class="tier-column"><div class="tier-header"><div class="tier-dot"></div> TIER 5</div><div class="tier-content" id="tier-5"><div class="empty-msg">Загрузка...</div></div></div>
-    </div>
-
-    <!-- Модальное окно просмотра другого игрока -->
-    <div class="modal-overlay" id="player-modal" onclick="closeModalDirect('player-modal')">
-        <div class="modal" onclick="event.stopPropagation()">
-            <div class="modal-header">
-                <img class="modal-avatar" id="modal-avatar" src="" alt="">
-                <div class="modal-title-box">
-                    <h3 id="modal-nick">Игрок</h3>
-                    <p id="modal-rank">Ранг</p>
-                </div>
-            </div>
-            <div class="modal-body">
-                <div class="modal-info-row">
-                    <span class="modal-info-label">Проверяющий тестер:</span>
-                    <span class="modal-info-value" id="modal-tester">—</span>
-                </div>
-                <div class="modal-comment-box">
-                    <div class="modal-comment-title">Комментарий к тесту</div>
-                    <div class="modal-comment-text" id="modal-comment">Нет комментариев</div>
-                </div>
-                <button class="modal-close-btn" onclick="closeModalDirect('player-modal')">Закрыть</button>
-            </div>
-        </div>
     </div>
 
     <!-- Модальное окно профиля авторизованного пользователя -->
@@ -235,14 +186,14 @@
                 </div>
             </div>
             <div class="modal-body">
-                <div class="modal-comment-box">
-                    <div class="modal-comment-title">История получения тиров</div>
+                <div style="background: rgba(5,6,9,0.5); padding: 12px; border-radius: 8px;">
+                    <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">История получения тиров</div>
                     <div class="history-list" id="user-tier-history">
-                        <div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 10px;">Загрузка истории...</div>
+                        <div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 10px;">Загрузка...</div>
                     </div>
                 </div>
                 
-                <button class="modal-close-btn" style="background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1);" onclick="openNickModal()">Изменить никнейм Minecraft</button>
+                <button class="modal-close-btn" style="background: rgba(255,255,255,0.05);" onclick="openNickModal()">Изменить никнейм Minecraft</button>
                 <button class="modal-close-btn" style="background: #e74c3c;" onclick="logout()">Выйти из аккаунта</button>
             </div>
         </div>
@@ -258,8 +209,20 @@
                 </div>
             </div>
             <div class="modal-body">
-                <input type="text" id="minecraft-nick-input" class="search-modal-input" placeholder="Например: Notch" style="padding-left: 16px;">
-                <button class="modal-close-btn" style="background: #4752C4;" onclick="saveMinecraftNick()">Сохранить ник</button>
+                <input type="text" id="minecraft-nick-input" class="search-modal-input" placeholder="Например: Notch">
+                
+                <!-- Блок с предупреждением о лицензии -->
+                <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 8px; padding: 10px 12px; margin-top: 4px;">
+                    <div style="font-size: 11px; font-weight: bold; color: #f87171; text-transform: uppercase; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                        Важная информация
+                    </div>
+                    <div style="font-size: 12px; color: #fca5a5; line-height: 1.4;">
+                        При использовании нелицензионного никнейма приоритет владения аккаунтом всегда остаётся за официальным обладателем лицензии Minecraft.
+                    </div>
+                </div>
+
+                <button class="modal-close-btn" style="background: #4752C4; margin-top: 6px;" onclick="saveMinecraftNick()">Сохранить ник</button>
             </div>
         </div>
     </div>
@@ -283,11 +246,6 @@
 
         window.onload = async function() {
             try {
-                // Очистка OAuth-параметров из URL для корректных последующих авторизаций
-                if (window.location.hash.includes('access_token')) {
-                    window.history.replaceState(null, '', window.location.pathname);
-                }
-
                 supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
                     auth: {
                         persistSession: true,
@@ -298,16 +256,15 @@
 
                 loadResults();
 
-                // Инициализация текущей сессии
                 const { data: { session } } = await supabaseClient.auth.getSession();
-                if (session) {
+                
+                if (session && session.user) {
                     currentUser = session.user;
                     await checkUserProfile();
                 }
 
-                // Отслеживание изменений состояния авторизации
                 supabaseClient.auth.onAuthStateChange(async (event, session) => {
-                    if (event === 'SIGNED_IN' && session) {
+                    if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session) {
                         currentUser = session.user;
                         await checkUserProfile();
                     } else if (event === 'SIGNED_OUT') {
@@ -317,12 +274,15 @@
                     }
                 });
 
+                if (window.location.hash.includes('access_token')) {
+                    window.history.replaceState(null, '', window.location.pathname);
+                }
+
             } catch (e) {
-                showError('Ошибка инициализации Supabase');
+                console.error('Ошибка инициализации:', e);
             }
         };
 
-        // Обработка клика по кнопке в шапке
         function handleAuthClick() {
             if (currentUser) {
                 openUserProfileModal();
@@ -335,9 +295,7 @@
             const redirectUrl = window.location.origin + window.location.pathname;
             await supabaseClient.auth.signInWithOAuth({
                 provider: 'discord',
-                options: {
-                    redirectTo: redirectUrl
-                }
+                options: { redirectTo: redirectUrl }
             });
         }
 
@@ -347,21 +305,29 @@
             location.reload();
         }
 
-        // Проверка наличия никнейма в профиле
         async function checkUserProfile() {
             if (!currentUser) return;
 
-            const { data } = await supabaseClient
-                .from('profiles')
-                .select('minecraft_nick')
-                .eq('id', currentUser.id)
-                .maybeSingle();
+            const discordName = currentUser.user_metadata?.full_name || currentUser.user_metadata?.custom_claims?.global_name || 'Игрок Discord';
 
-            if (!data || !data.minecraft_nick) {
-                openNickModal();
-            } else {
-                currentMinecraftNick = data.minecraft_nick;
-                updateAuthButton(currentMinecraftNick);
+            try {
+                const { data, error } = await supabaseClient
+                    .from('profiles')
+                    .select('minecraft_nick')
+                    .eq('id', currentUser.id)
+                    .maybeSingle();
+
+                if (data && data.minecraft_nick) {
+                    currentMinecraftNick = data.minecraft_nick;
+                    updateAuthButton(currentMinecraftNick);
+                } else {
+                    currentMinecraftNick = null;
+                    updateAuthButton(discordName);
+                    openNickModal();
+                }
+            } catch (err) {
+                console.error("Сбой проверки профиля:", err);
+                updateAuthButton(discordName);
             }
         }
 
@@ -373,7 +339,6 @@
             }
         }
 
-        // Сохранение никнейма в таблице profiles
         async function saveMinecraftNick() {
             const nickInput = document.getElementById('minecraft-nick-input').value.trim();
             if (!nickInput) return alert('Пожалуйста, введите никнейм!');
@@ -398,11 +363,11 @@
             }
         }
 
-        function updateAuthButton(nick) {
+        function updateAuthButton(displayName) {
             const btnText = document.getElementById('auth-btn-text');
             const btn = document.getElementById('auth-btn');
-            if (nick) {
-                btnText.innerText = `👤 ${nick}`;
+            if (displayName) {
+                btnText.innerText = `👤 ${displayName}`;
                 btn.style.background = '#2b2d31';
             } else {
                 btnText.innerText = 'Вход';
@@ -410,121 +375,78 @@
             }
         }
 
-        // Открытие профиля авторизованного пользователя
         async function openUserProfileModal() {
             if (!currentUser) return;
 
-            const nick = currentMinecraftNick || 'Не привязан';
+            const nick = currentMinecraftNick || currentUser.user_metadata?.full_name || 'Профиль';
             document.getElementById('user-profile-nick').textContent = nick;
             document.getElementById('user-profile-avatar').src = `https://mc-heads.net/avatar/${encodeURIComponent(nick)}/64`;
 
             const historyContainer = document.getElementById('user-tier-history');
-            historyContainer.innerHTML = '<div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 10px;">Загрузка истории...</div>';
+            historyContainer.innerHTML = '<div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 10px;">Загрузка...</div>';
 
             document.getElementById('user-profile-modal').classList.add('active');
 
-            // Получаем историю тиров пользователя из test_results
             if (currentMinecraftNick) {
-                const { data: history, error } = await supabaseClient
+                const { data: history } = await supabaseClient
                     .from('test_results')
                     .select('*')
                     .ilike('user_id', currentMinecraftNick);
 
-                if (error || !history || history.length === 0) {
-                    historyContainer.innerHTML = '<div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 10px;">Тесты пока не проходились</div>';
+                if (!history || history.length === 0) {
+                    historyContainer.innerHTML = '<div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 10px;">Тесты не найдены</div>';
                 } else {
                     historyContainer.innerHTML = history.map(item => `
                         <div class="history-item">
                             <span class="history-rank">${escapeHtml(item.rank_type)}</span>
-                            <span class="history-tester">Тестер: ${escapeHtml(item.tester_id || 'Не указан')}</span>
+                            <span style="color: var(--text-muted); font-size: 12px;">Тестер: ${escapeHtml(item.tester_id || '—')}</span>
                         </div>
                     `).join('');
                 }
             } else {
-                historyContainer.innerHTML = '<div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 10px;">Привяжите никнейм для просмотра истории</div>';
+                historyContainer.innerHTML = '<div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 10px;">Привяжите никнейм Minecraft</div>';
             }
         }
 
         async function loadResults() {
             try {
-                const { data, error } = await supabaseClient
-                    .from('test_results')
-                    .select('*');
-
-                if (error) {
-                    showError(`Ошибка базы: ${error.message}`);
-                    return;
+                const { data, error } = await supabaseClient.from('test_results').select('*');
+                if (!error && data) {
+                    allResults = data;
+                    renderTiers(allResults);
+                    renderTesters(allResults);
                 }
-
-                allResults = data || [];
-                renderTiers(allResults);
-                renderTesters(allResults);
             } catch (error) {
-                showError('Ошибка соединения');
+                console.error("Ошибка загрузки результатов:", error);
             }
-        }
-
-        function showError(msg) {
-            for (let i = 1; i <= 5; i++) {
-                document.getElementById(`tier-${i}`).innerHTML = `<div class="empty-msg" style="color:#f38ba8;">${msg}</div>`;
-            }
-            document.getElementById('testers-grid').innerHTML = `<span style="color:#f38ba8; font-size: 13px;">${msg}</span>`;
-        }
-
-        function sortPlayers(players) {
-            return players.sort((a, b) => {
-                const rankA = a.rank_type ? a.rank_type.toUpperCase() : '';
-                const rankB = b.rank_type ? b.rank_type.toUpperCase() : '';
-                
-                const isHT_A = rankA.startsWith('HT');
-                const isHT_B = rankB.startsWith('HT');
-
-                if (isHT_A && !isHT_B) return -1;
-                if (!isHT_A && isHT_B) return 1;
-
-                return (a.user_id || '').localeCompare(b.user_id || '', undefined, { sensitivity: 'base' });
-            });
         }
 
         function renderTiers(data) {
-            for (let i = 1; i <= 5; i++) {
-                document.getElementById(`tier-${i}`).innerHTML = '';
-            }
-
+            for (let i = 1; i <= 5; i++) document.getElementById(`tier-${i}`).innerHTML = '';
             const tiers = { 1: [], 2: [], 3: [], 4: [], 5: [] };
 
             data.forEach(player => {
                 const rank = player.rank_type ? player.rank_type.toUpperCase() : '';
                 const tierNum = TIER_MAP[rank];
-                if (tierNum) {
-                    tiers[tierNum].push(player);
-                }
+                if (tierNum) tiers[tierNum].push(player);
             });
 
             for (let i = 1; i <= 5; i++) {
                 const container = document.getElementById(`tier-${i}`);
-                const sortedPlayers = sortPlayers(tiers[i]);
-
-                if (sortedPlayers.length === 0) {
+                if (tiers[i].length === 0) {
                     container.innerHTML = '<div class="empty-msg">Пусто</div>';
                     continue;
                 }
-
-                sortedPlayers.forEach(player => {
+                tiers[i].forEach(player => {
                     const card = document.createElement('div');
                     card.className = 'player-card';
-
-                    const avatarUrl = `https://mc-heads.net/avatar/${encodeURIComponent(player.user_id)}/32`;
-
                     card.innerHTML = `
                         <div class="player-info">
-                            <img class="player-avatar" src="${avatarUrl}" alt="" onerror="this.style.display='none'">
-                            <span class="player-nick" title="${escapeHtml(player.user_id)}">${escapeHtml(player.user_id)}</span>
+                            <img class="player-avatar" src="https://mc-heads.net/avatar/${encodeURIComponent(player.user_id)}/32" alt="">
+                            <span class="player-nick">${escapeHtml(player.user_id)}</span>
                         </div>
                         <span class="player-rank">${escapeHtml(player.rank_type)}</span>
                     `;
-
-                    card.addEventListener('click', () => openPlayerModal(player));
                     container.appendChild(card);
                 });
             }
@@ -533,121 +455,22 @@
         function renderTesters(data) {
             const testersContainer = document.getElementById('testers-grid');
             const counts = {};
-
             data.forEach(item => {
                 const tester = item.tester_id ? item.tester_id.trim() : '';
-                if (tester && tester !== '' && tester.toLowerCase() !== 'не указан') {
-                    counts[tester] = (counts[tester] || 0) + 1;
-                }
+                if (tester && tester.toLowerCase() !== 'не указан') counts[tester] = (counts[tester] || 0) + 1;
             });
 
-            const sortedTesters = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-
-            if (sortedTesters.length === 0) {
-                testersContainer.innerHTML = '<span style="color: var(--text-muted); font-size: 13px;">Тестеры пока не указаны</span>';
-                return;
-            }
-
             testersContainer.innerHTML = '';
-            sortedTesters.forEach(([testerName, count]) => {
+            Object.entries(counts).forEach(([testerName, count]) => {
                 const badge = document.createElement('div');
                 badge.className = 'tester-badge';
-                const avatarUrl = `https://mc-heads.net/avatar/${encodeURIComponent(testerName)}/24`;
-
                 badge.innerHTML = `
-                    <img class="tester-avatar" src="${avatarUrl}" alt="" onerror="this.style.display='none'">
+                    <img class="tester-avatar" src="https://mc-heads.net/avatar/${encodeURIComponent(testerName)}/24" alt="">
                     <span class="tester-name">${escapeHtml(testerName)}</span>
                     <span class="tester-count">${count}</span>
                 `;
                 testersContainer.appendChild(badge);
             });
-        }
-
-        function openSearchModal() {
-            const modal = document.getElementById('search-modal');
-            modal.classList.add('active');
-            const input = document.getElementById('modal-search-input');
-            input.value = '';
-            input.focus();
-            renderSearchResults('');
-        }
-
-        function closeSearchModal(e) {
-            if (!e || e.target === document.getElementById('search-modal') || e.key === 'Escape') {
-                document.getElementById('search-modal').classList.remove('active');
-            }
-        }
-
-        window.addEventListener('keydown', (e) => {
-            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-                e.preventDefault();
-                openSearchModal();
-            }
-            if (e.key === 'Escape') {
-                closeSearchModal(e);
-                closeModalDirect('player-modal');
-                closeModalDirect('user-profile-modal');
-            }
-        });
-
-        document.getElementById('modal-search-input').addEventListener('input', (e) => {
-            renderSearchResults(e.target.value.toLowerCase().trim());
-        });
-
-        function renderSearchResults(query) {
-            const container = document.getElementById('search-modal-results');
-            if (!query) {
-                container.innerHTML = `<div class="search-modal-empty"><span>Начните вводить ник для поиска...</span></div>`;
-                return;
-            }
-
-            const filtered = allResults.filter(player => (player.user_id || '').toLowerCase().includes(query));
-
-            if (filtered.length === 0) {
-                container.innerHTML = `<div class="search-modal-empty"><span>Игроки не найдены</span></div>`;
-                return;
-            }
-
-            container.innerHTML = '';
-            filtered.forEach(player => {
-                const card = document.createElement('div');
-                card.className = 'player-card';
-                const avatarUrl = `https://mc-heads.net/avatar/${encodeURIComponent(player.user_id)}/32`;
-
-                card.innerHTML = `
-                    <div class="player-info">
-                        <img class="player-avatar" src="${avatarUrl}" alt="" onerror="this.style.display='none'">
-                        <span class="player-nick">${escapeHtml(player.user_id)}</span>
-                    </div>
-                    <span class="player-rank">${escapeHtml(player.rank_type)}</span>
-                `;
-                card.addEventListener('click', () => {
-                    document.getElementById('search-modal').classList.remove('active');
-                    openPlayerModal(player);
-                });
-                container.appendChild(card);
-            });
-        }
-
-        function openPlayerModal(player) {
-            const modalOverlay = document.getElementById('player-modal');
-            document.getElementById('modal-avatar').src = `https://mc-heads.net/avatar/${encodeURIComponent(player.user_id)}/64`;
-            document.getElementById('modal-nick').textContent = player.user_id;
-            document.getElementById('modal-rank').textContent = `Ранг: ${player.rank_type}`;
-            document.getElementById('modal-tester').textContent = player.tester_id || 'Не указан';
-            
-            const commentEl = document.getElementById('modal-comment');
-            if (player.comment && player.comment.trim() !== '' && player.comment !== 'Без комментария') {
-                commentEl.textContent = player.comment;
-                commentEl.style.fontStyle = 'italic';
-                commentEl.style.color = '#bac2de';
-            } else {
-                commentEl.textContent = 'Комментарий отсутствует';
-                commentEl.style.fontStyle = 'normal';
-                commentEl.style.color = 'var(--text-muted)';
-            }
-
-            modalOverlay.classList.add('active');
         }
 
         function closeModalDirect(modalId) {
