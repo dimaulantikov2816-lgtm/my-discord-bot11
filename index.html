@@ -83,7 +83,7 @@
         .testers-grid { display: flex; flex-wrap: wrap; gap: 12px; }
         .tester-badge {
             background: rgba(8, 9, 13, 0.6); border: 1px solid rgba(255, 255, 255, 0.04);
-            border-radius: 12px; padding: 8px 14px; display: flex; align-items: center; gap: 10px;
+            border-radius: 12px; padding: 8px 14px; display: flex; align-items: center; gap: 10px; cursor: pointer;
         }
         .tester-avatar { width: 24px; height: 24px; border-radius: 6px; background: #181924; object-fit: cover; }
         .tester-name { font-size: 13px; font-weight: 500; color: #e2e8f0; }
@@ -132,9 +132,11 @@
         .modal-close-btn:hover { background: #222536; }
 
         .search-modal-input { width: 100%; background: rgba(5, 6, 9, 0.8); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; font-size: 15px; color: #fff; outline: none; box-sizing: border-box; }
-        .history-list { display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto; margin-top: 5px; }
-        .history-item { background: rgba(5, 6, 9, 0.6); border: 1px solid rgba(255, 255, 255, 0.04); padding: 10px 14px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
+        .history-list { display: flex; flex-direction: column; gap: 8px; max-height: 220px; overflow-y: auto; margin-top: 5px; }
+        .history-item { background: rgba(5, 6, 9, 0.6); border: 1px solid rgba(255, 255, 255, 0.04); padding: 10px 14px; border-radius: 8px; display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
+        .history-item-top { display: flex; justify-content: space-between; align-items: center; width: 100%; }
         .history-rank { font-weight: bold; color: var(--accent-color); }
+        .history-comment { font-size: 12px; color: var(--text-muted); background: rgba(0, 0, 0, 0.3); padding: 6px 8px; border-radius: 6px; margin-top: 4px; border-left: 2px solid var(--accent-color); word-break: break-word; }
     </style>
 </head>
 <body>
@@ -361,11 +363,13 @@
 
             list.innerHTML = filtered.map(player => `
                 <div class="history-item" style="cursor: pointer;" onclick="closeModalDirect('search-modal'); openPlayerProfile('${escapeHtml(player.user_id)}')">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <img src="https://mc-heads.net/avatar/${encodeURIComponent(player.user_id)}/24" style="width: 24px; height: 24px; border-radius: 4px;" alt="">
-                        <span>${escapeHtml(player.user_id)}</span>
+                    <div class="history-item-top">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <img src="https://mc-heads.net/avatar/${encodeURIComponent(player.user_id)}/24" style="width: 24px; height: 24px; border-radius: 4px;" alt="">
+                            <span>${escapeHtml(player.user_id)}</span>
+                        </div>
+                        <span class="history-rank">${escapeHtml(player.rank_type)}</span>
                     </div>
-                    <span class="history-rank">${escapeHtml(player.rank_type)}</span>
                 </div>
             `).join('');
         }
@@ -387,8 +391,11 @@
 
                 historyContainer.innerHTML = playerRecords.map(item => `
                     <div class="history-item">
-                        <span class="history-rank">${escapeHtml(item.rank_type)}</span>
-                        <span style="color: var(--text-muted); font-size: 12px;">Тестер: ${escapeHtml(item.tester_id || '—')}</span>
+                        <div class="history-item-top">
+                            <span class="history-rank">${escapeHtml(item.rank_type)}</span>
+                            <span style="color: var(--text-muted); font-size: 12px;">Тестер: ${escapeHtml(item.tester_id || '—')}</span>
+                        </div>
+                        ${item.comment ? `<div class="history-comment">${escapeHtml(item.comment)}</div>` : ''}
                     </div>
                 `).join('');
             } else {
@@ -457,7 +464,7 @@
             const nickInput = document.getElementById('minecraft-nick-input').value.trim();
             if (!nickInput) return alert('Пожалуйста, введите никнейм!');
 
-            const discordId = currentUser.user_metadata?.provider_id || currentUser.app_metadata?.provider_id || '';
+            const discordId = currentUser.user_metadata?.provider_id || currentUser.app_metadata?.provider_id || currentUser.id;
 
             const { error } = await supabaseClient
                 .from('profiles')
@@ -474,6 +481,7 @@
                 currentMinecraftNick = nickInput;
                 document.getElementById('nick-modal').classList.remove('active');
                 updateAuthButton(currentMinecraftNick);
+                alert('Ник успешно сохранен!');
             }
         }
 
@@ -502,18 +510,18 @@
             document.getElementById('user-profile-modal').classList.add('active');
 
             if (currentMinecraftNick) {
-                const { data: history } = await supabaseClient
-                    .from('test_results')
-                    .select('*')
-                    .ilike('user_id', currentMinecraftNick);
+                const history = allResults.filter(r => r.user_id && r.user_id.toLowerCase() === currentMinecraftNick.toLowerCase());
 
                 if (!history || history.length === 0) {
                     historyContainer.innerHTML = '<div style="color: var(--text-muted); font-size: 13px; text-align: center; padding: 10px;">Тесты не найдены</div>';
                 } else {
                     historyContainer.innerHTML = history.map(item => `
                         <div class="history-item">
-                            <span class="history-rank">${escapeHtml(item.rank_type)}</span>
-                            <span style="color: var(--text-muted); font-size: 12px;">Тестер: ${escapeHtml(item.tester_id || '—')}</span>
+                            <div class="history-item-top">
+                                <span class="history-rank">${escapeHtml(item.rank_type)}</span>
+                                <span style="color: var(--text-muted); font-size: 12px;">Тестер: ${escapeHtml(item.tester_id || '—')}</span>
+                            </div>
+                            ${item.comment ? `<div class="history-comment">${escapeHtml(item.comment)}</div>` : ''}
                         </div>
                     `).join('');
                 }
@@ -579,7 +587,6 @@
             Object.entries(counts).forEach(([testerName, count]) => {
                 const badge = document.createElement('div');
                 badge.className = 'tester-badge';
-                badge.style.cursor = 'pointer';
                 badge.onclick = () => openPlayerProfile(testerName);
                 badge.innerHTML = `
                     <img class="tester-avatar" src="https://mc-heads.net/avatar/${encodeURIComponent(testerName)}/24" alt="">
