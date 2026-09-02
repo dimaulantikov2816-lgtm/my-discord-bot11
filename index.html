@@ -69,35 +69,6 @@
 
         .header-right { display: flex; align-items: center; gap: 15px; }
         
-        /* Кнопка Скачать tiertagger */
-        .tiertagger-btn {
-            background: rgba(10, 11, 16, 0.75);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 0 18px;
-            height: 54px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            color: var(--text-main);
-            font-size: 14px;
-            font-weight: 600;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
-        }
-        .tiertagger-btn:hover {
-            background-color: rgba(22, 25, 36, 0.9);
-            border-color: rgba(255, 255, 255, 0.15);
-            transform: translateY(-2px);
-            color: #fff;
-        }
-        .tiertagger-btn svg {
-            width: 18px;
-            height: 18px;
-            fill: var(--accent-color);
-        }
-
         .discord-btn {
             background: linear-gradient(135deg, #4752C4, #363db2);
             border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px;
@@ -200,6 +171,61 @@
         }
         .modal-close-btn { width: 100%; margin-top: 20px; background: #181924; border: 1px solid var(--border-color); color: #fff; padding: 10px; border-radius: 8px; font-size: 14px; cursor: pointer; transition: background 0.2s; }
         .modal-close-btn:hover { background: #222433; }
+
+        /* Стили для выбора версий модального окна Tiertagger */
+        .tiertagger-versions {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        .tiertagger-version-card {
+            background: rgba(5, 6, 9, 0.7);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+        }
+        .tiertagger-version-card:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+            background: rgba(15, 18, 26, 0.9);
+        }
+        .version-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .version-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+        }
+        .version-subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        .download-green-btn {
+            background: #238636;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.2s ease, transform 0.1s ease;
+        }
+        .download-green-btn:hover {
+            background: #2ea043;
+            transform: translateY(-1px);
+        }
     </style>
 </head>
 <body>
@@ -215,12 +241,6 @@
             </div>
         </div>
         <div class="header-right">
-            <!-- Кнопка Скачать tiertagger -->
-            <button class="tiertagger-btn" onclick="openTierTaggerModal()">
-                <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-                <span>Скачать tiertagger</span>
-            </button>
-
             <div class="search-trigger" onclick="openSearchModal()">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 <span>Поиск игрока...</span>
@@ -243,12 +263,37 @@
             <div class="modal-header" style="margin-bottom: 15px;">
                 <div class="modal-title-box">
                     <h3>Скачать Tiertagger</h3>
-                    <p>Меню загрузки файлов</p>
+                    <p>Выберите версию мода для загрузки</p>
                 </div>
             </div>
             <div class="modal-body">
-                <div style="background: rgba(5, 6, 9, 0.7); border: 1px dashed var(--border-color); border-radius: 10px; padding: 25px; text-align: center; color: var(--text-muted); font-size: 14px;">
-                    Жди
+                <div class="tiertagger-versions">
+                    <!-- Версия 1.21.11 -->
+                    <div class="tiertagger-version-card">
+                        <div class="version-info">
+                            <div>
+                                <div class="version-title">Tiertagger</div>
+                                <div class="version-subtitle">Версия 1.21.11</div>
+                            </div>
+                        </div>
+                        <a href="#" class="download-green-btn" onclick="downloadMod('1.21.11'); return false;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            Скачать
+                        </a>
+                    </div>
+                    <!-- Версия 1.21 -->
+                    <div class="tiertagger-version-card">
+                        <div class="version-info">
+                            <div>
+                                <div class="version-title">Tiertagger</div>
+                                <div class="version-subtitle">Версия 1.21</div>
+                            </div>
+                        </div>
+                        <a href="#" class="download-green-btn" onclick="downloadMod('1.21'); return false;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            Скачать
+                        </a>
+                    </div>
                 </div>
                 <button class="modal-close-btn" onclick="closeTierTaggerModalDirect()">Закрыть</button>
             </div>
@@ -493,6 +538,11 @@
             document.getElementById('tiertagger-modal').classList.remove('active');
         }
 
+        function downloadMod(version) {
+            // Здесь можно прописать реальную логику скачивания файла или ссылку для каждой версии
+            alert(`Загрузка Tiertagger для версии ${version}...`);
+        }
+
         function openSearchModal() {
             const modal = document.getElementById('search-modal');
             modal.classList.add('active');
@@ -583,7 +633,7 @@
                         </div>
                         <div class="modal-comment-box" style="margin-top: 0;">
                             <div class="modal-comment-title">Комментарий</div>
-                            <div class="modal-comment-text" style="font-style: ${isItalic ? 'italic' : 'normal'}; color: ${isItalic ? '#bac2de' : 'var(--text-muted)'};">${commentText}</div>
+                            <div class="modal-comment-text" style="font-style: ${isItalic ? 'italic' : 'normal'}; color: ${isItalic ? '#bac2de' : 'var(--text-muted)'};">${commentTest}</div>
                         </div>
                     </div>
                 `;
