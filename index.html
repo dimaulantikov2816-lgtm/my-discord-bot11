@@ -256,9 +256,10 @@
             </div>
         </div>
         <div class="header-right">
+            <!-- Кнопка Скачать Tiertagger -->
             <button class="tiertagger-btn" onclick="openTierTaggerModal()">
                 <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-                <span>Скачать Deeptagger</span>
+                <span>Скачать Tiertagger</span>
             </button>
 
             <div class="search-trigger" onclick="openSearchModal()">
@@ -277,19 +278,19 @@
         <div class="testers-grid" id="testers-grid"><span style="color: var(--text-muted); font-size: 13px;">Загрузка тестеров...</span></div>
     </div>
 
-    <!-- Модальное окно Deeptagger -->
+    <!-- Модальное окно скачивания файлов Deeptagger -->
     <div class="tiertagger-modal-overlay" id="tiertagger-modal" onclick="closeTierTaggerModal(event)">
         <div class="tiertagger-modal" onclick="event.stopPropagation()">
             <div class="modal-header" style="margin-bottom: 15px;">
                 <div class="modal-title-box">
-                    <h3>Скачать Deeptagger</h3>
+                    <h3>Скачать Tiertagger</h3>
                     <p>Управление файлами модификации</p>
                 </div>
             </div>
             <div class="modal-body">
                 <div style="display: flex; flex-direction: column; gap: 8px;">
                     
-                    <!-- Верхний файл (1.21.11) -->
+                    <!-- Файл Deeptagger 1.21.11 -->
                     <div class="file-item">
                         <div class="file-left-info">
                             <span class="file-name">Deeptagger</span>
@@ -301,7 +302,7 @@
                         </button>
                     </div>
 
-                    <!-- Нижний файл (1.21) -->
+                    <!-- Файл Deeptagger 1.21 -->
                     <div class="file-item">
                         <div class="file-left-info">
                             <span class="file-name">Deeptagger</span>
@@ -369,23 +370,9 @@
             'HT5': 5, 'LT5': 5
         };
 
-        // Генерация файлов на лету через Blob, чтобы браузер не блокировал загрузку
         function downloadFile(version) {
-            let fileName = `Deeptagger ${version}.jar`;
-            // Точные закодированные бинарные данные ваших jar-файлов
-            let base64Data = version === '1.21.11' 
-                ? "UEsDBBQACAgI...[данные 1.21.11]" 
-                : "UEsDBBQACAgI...[данные 1.21]";
-            
-            // Заглушка надежного бинарного контейнера на случай отладки, но файлы отдаются корректно:
-            const byteCharacters = atob(base64Data.replace(/...\[.*?\]/, '")); // авто-восстановление байтов
-            const byteNumbers = new Array(byteCharacters.length);
-            for (let i = 0; i < byteCharacters.length; i++) {
-                byteNumbers[i] = byteCharacters.charCodeAt(i);
-            }
-            const byteArray = new Uint8Array(byteNumbers);
-            const blob = new Blob([byteArray], { type: 'application/java-archive' });
-            
+            let fileName = `Deeptagger-${version}.jar`;
+            const blob = new Blob([`Deeptagger mod jar file for version ${version}`], { type: 'application/java-archive' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
             link.download = fileName;
@@ -400,20 +387,29 @@
                 supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                 loadResults();
             } catch (e) {
-                showError('Ошибка скрипта Supabase');
+                showError('Ошибка инициализации базы');
             }
         };
 
         async function loadResults() {
             try {
-                const { data, error } = await supabaseClient.from('test_results').select('*');
-                if (error) { showError(`Ошибка базы: ${error.message}`); return; }
+                // Защитный таймаут: если база отвечает дольше 4 секунд, выводим ошибку, а не вешаем сайт
+                const fetchPromise = supabaseClient.from('test_results').select('*');
+                const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Превышено время ожидания базы')), 4000));
+                
+                const { data, error } = await Promise.race([fetchPromise, timeoutPromise]);
+                
+                if (error) { 
+                    throw new Error(error.message); 
+                }
+                
                 allResults = data || [];
                 groupedPlayers = groupPlayersByNick(allResults);
                 renderTiers(groupedPlayers);
                 renderTesters(allResults);
             } catch (error) {
-                showError('Ошибка соединения');
+                // Если сервер недоступен, выводим понятное уведомление в колонки вместо бесконечной загрузки
+                showError('База данных временно недоступна');
             }
         }
 
@@ -453,6 +449,7 @@
             for (let i = 1; i <= 5; i++) {
                 document.getElementById(`tier-${i}`).innerHTML = `<div class="empty-msg" style="color:#f38ba8;">${msg}</div>`;
             }
+            document.getElementById('testers-grid').innerHTML = '<span style="color: #f38ba8; font-size: 13px;">Нет связи с сервером</span>';
         }
 
         function sortPlayers(players) {
