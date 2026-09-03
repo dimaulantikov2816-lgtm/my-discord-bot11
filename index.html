@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b0d11">
+  <title>VANILLA — Рейтинг</title>
+  <link rel="preconnect" href="https://mc-heads.net">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --bg: #08090d;
+      --panel: rgba(16, 18, 24, 0.82);
+      --line: rgba(255, 255, 255, 0.08);
+      --text: #e8edf4;
+      --muted: #8b93a3;
+      --accent: #89b4fa;
+      --ht: #d4b07a;
+      --lt: #89c4d4;
+      --shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      font-family: Segoe UI, system-ui, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: url("assets/bg-deepslate.png") center / cover no-repeat;
+      image-rendering: pixelated;
+      filter: brightness(0.72);
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(180deg, rgba(8, 9, 13, 0.35) 0%, rgba(8, 9, 13, 0.72) 100%);
+      pointer-events: none;
+    }
+
+    .page {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 20px 0 48px;
+    }
+
+    .topbar, .testers, .col, .modal {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 16px;
+      border-radius: 16px;
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand img {
+      width: 46px;
+      height: 46px;
+      border-radius: 10px;
+      object-fit: cover;
+      image-rendering: pixelated;
+    }
+    .brand strong { display: block; font-size: 20px; letter-spacing: 0.08em; }
+    .brand span {
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+    }
+
+    .top-actions { display: flex; align-items: center; gap: 10px; }
+
+    .search-trigger {
+      width: 240px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(8, 9, 13, 0.65);
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .search-trigger span { flex: 1; text-align: left; font-size: 14px; }
+    .search-trigger kbd {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 2px 6px;
+      font-size: 11px;
+    }
+
+    .discord {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #4752c4, #363db2);
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .testers {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin-top: 14px;
+      padding: 12px 16px;
+      border-radius: 16px;
+    }
+    .testers > b {
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      margin-right: 4px;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 10px 5px 5px;
+      border-radius: 999px;
+      background: rgba(8, 9, 13, 0.55);
+      border: 1px solid var(--line);
+      font-size: 13px;
+    }
+    .chip img, .row img, .result-row img { width: 22px; height: 22px; border-radius: 5px; image-rendering: pixelated; }
+    .chip em { color: var(--accent); font-style: normal; font-weight: 700; font-size: 12px; }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+      align-items: start;
+    }
+
+    .col {
+      min-height: 280px;
+      border-radius: 16px;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.78) 0%, rgba(28, 32, 42, 0.78) 100%);
+    }
+    .col.t1 { background: linear-gradient(180deg, rgba(40, 32, 14, 0.88), rgba(16, 18, 24, 0.86)); }
+    .col.t2 { background: linear-gradient(180deg, rgba(28, 34, 42, 0.9), rgba(16, 18, 24, 0.86)); }
+    .col.t3 { background: linear-gradient(180deg, rgba(16, 38, 36, 0.9), rgba(16, 18, 24, 0.86)); }
+    .col.t4 { background: linear-gradient(180deg, rgba(16, 28, 46, 0.9), rgba(16, 18, 24, 0.86)); }
+    .col.t5 { background: linear-gradient(180deg, rgba(32, 22, 44, 0.9), rgba(16, 18, 24, 0.86)); }
+
+    .col h2 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 14px 10px;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      border-bottom: 1px solid var(--line);
+    }
+    .col h2::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+    .list { padding: 10px; display: grid; gap: 8px; min-height: 180px; }
+
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 40px;
+      padding: 6px 8px;
+      border-radius: 10px;
+      background: rgba(8, 9, 13, 0.45);
+      border: 1px solid transparent;
+      cursor: pointer;
+    }
+    .row:hover { background: rgba(255, 255, 255, 0.06); border-color: var(--line); }
+    .row .nick {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 13px;
+    }
+    .badge {
+      flex: 0 0 auto;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 7px;
+      border-radius: 6px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--line);
+    }
+    .badge.ht { color: var(--ht); }
+    .badge.lt { color: var(--lt); }
+
+    .empty { color: var(--muted); text-align: center; padding: 42px 8px; font-size: 13px; }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.62);
+      display: none;
+      place-items: center;
+      padding: 20px;
+      z-index: 20;
+    }
+    .overlay.active { display: grid; }
+
+    .modal {
+      width: min(520px, 100%);
+      border-radius: 16px;
+      padding: 18px;
+    }
+
+    .search-box { position: relative; }
+    .search-box input {
+      width: 100%;
+      height: 46px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(8, 9, 13, 0.8);
+      color: var(--text);
+      padding: 0 14px 0 40px;
+      font: 15px Segoe UI, sans-serif;
+      outline: none;
+    }
+    .search-box svg {
+      position: absolute;
+      left: 14px;
+      top: 14px;
+      opacity: 0.6;
+    }
+    .search-results {
+      margin-top: 12px;
+      max-height: 320px;
+      overflow: auto;
+      display: grid;
+      gap: 6px;
+    }
+
+    .profile-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 14px;
+      margin-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+    .profile-head img {
+      width: 52px;
+      height: 52px;
+      border-radius: 10px;
+      image-rendering: pixelated;
+    }
+    .profile-head p { color: var(--accent); font-size: 13px; margin-top: 4px; }
+
+    .history {
+      max-height: 52vh;
+      overflow: auto;
+      display: grid;
+      gap: 10px;
+    }
+    .test {
+      background: rgba(8, 9, 13, 0.55);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+    }
+    .test-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+    .test-top b { color: var(--accent); }
+    .test-top span { color: var(--muted); }
+    .comment-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
+    }
+    .comment {
+      color: #c5cde0;
+      font-size: 13px;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .close-btn {
+      width: 100%;
+      margin-top: 12px;
+      height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(8, 9, 13, 0.7);
+      color: #fff;
+      cursor: pointer;
+    }
+
+    @media (max-width: 980px) {
+      .board { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .search-trigger { width: 170px; }
+    }
+    @media (max-width: 560px) {
+      .board { grid-template-columns: 1fr; }
+      .topbar { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <div class="brand">
+        <img src="assets/rank-badge.png" alt="">
+        <div>
+          <strong>VANILLA</strong>
+          <span>РЕЙТИНГ</span>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button class="search-trigger" id="search-open" type="button">
+          <span>Поиск игрока...</span>
+          <kbd>ctrl K</kbd>
+        </button>
+        <a class="discord" href="https://discord.com" target="_blank" rel="noreferrer" aria-label="Discord">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.3 4.6A18 18 0 0 0 14.9 3l-.2.4a16.4 16.4 0 0 1 3.8 1.5 13.5 13.5 0 0 0-10.9 0A16 16 0 0 1 9.3 3L9.1 3a18 18 0 0 0-4.4 1.6C1.7 9.1 1 13.4 1.2 17.7a18.3 18.3 0 0 0 5.5 2.8l.7-1.1a12 12 0 0 1-1.8-.8l.4-.3c3.5 1.6 7.3 1.6 10.8 0l.4.3c-.6.3-1.2.6-1.8.8l.7 1.1a18.2 18.2 0 0 0 5.5-2.8c.4-4.9-.7-9.1-2.3-13.1ZM8.6 15.2c-1 0-1.9-1-1.9-2.2s.8-2.2 1.9-2.2 1.9 1 1.9 2.2-.8 2.2-1.9 2.2Zm6.8 0c-1 0-1.9-1-1.9-2.2s.8-2.2 1.9-2.2 1.9 1 1.9 2.2-.8 2.2-1.9 2.2Z"/></svg>
+        </a>
+      </div>
+    </header>
+
+    <section class="testers" id="testers"><b>НАШИ ТЕСТЕРЫ</b></section>
+    <main id="board" class="board"></main>
+  </div>
+
+  <div class="overlay" id="search-modal">
+    <div class="modal" role="dialog" aria-label="Поиск игрока">
+      <div class="search-box">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M20 20L16.5 16.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <input id="search-input" type="search" placeholder="Поиск игрока..." autocomplete="off">
+      </div>
+      <div class="search-results" id="search-results"></div>
+    </div>
+  </div>
+
+  <div class="overlay" id="player-modal">
+    <div class="modal" role="dialog" aria-label="Профиль игрока">
+      <div class="profile-head">
+        <img id="profile-avatar" alt="">
+        <div>
+          <h3 id="profile-nick">Игрок</h3>
+          <p id="profile-meta">Всего тестов: 0</p>
+        </div>
+      </div>
+      <div class="history" id="profile-history"></div>
+      <button class="close-btn" id="profile-close" type="button">Закрыть</button>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://cyhsopkvllsliuazldlm.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN5aHNvcGt2bGxzbGl1YXpsZGxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxOTI1MjIsImV4cCI6MjEwMzc2ODUyMn0.ypkeu5pPJc7jZaOzFURSmQeomdhvUlseQLsowJc_4nQ";
+    const TIER_MAP = { HT1: 1, LT1: 1, HT2: 2, LT2: 2, HT3: 3, LT3: 3, HT4: 4, LT4: 4, HT5: 5, LT5: 5 };
+    const FALLBACK = "assets/player-icon.png";
+
+    const board = document.getElementById("board");
+    const testersEl = document.getElementById("testers");
+    const searchModal = document.getElementById("search-modal");
+    const playerModal = document.getElementById("player-modal");
+    const searchInput = document.getElementById("search-input");
+    const searchResults = document.getElementById("search-results");
+
+    let groupedPlayers = [];
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function rankKind(rank) {
+      const raw = String(rank || "").toUpperCase();
+      if (raw.startsWith("HT")) return "ht";
+      if (raw.startsWith("LT")) return "lt";
+      return "";
+    }
+
+    function head(nick, size) {
+      const name = String(nick || "").trim();
+      const src = name ? "https://mc-heads.net/avatar/" + encodeURIComponent(name) + "/" + size : FALLBACK;
+      return `<img src="${src}" alt="" width="${size}" height="${size}" loading="lazy" onerror="this.onerror=null;this.src='${FALLBACK}'">`;
+    }
+
+    function groupPlayersByNick(data) {
+      const map = {};
+      data.forEach((item) => {
+        const rawNick = item.user_id || "";
+        const key = rawNick.toLowerCase();
+        if (!map[key]) map[key] = { tests: [] };
+        map[key].tests.push(item);
+      });
+
+      return Object.values(map).map((group) => {
+        group.tests.sort((a, b) => {
+          const dateA = Date.parse(a.updated_at || "") || 0;
+          const dateB = Date.parse(b.updated_at || "") || 0;
+          if (dateA !== dateB) return dateB - dateA;
+          const tierA = TIER_MAP[String(a.rank_type || "").toUpperCase()] || 99;
+          const tierB = TIER_MAP[String(b.rank_type || "").toUpperCase()] || 99;
+          return tierA - tierB;
+        });
+        const latest = group.tests[0];
+        const best = [...group.tests].sort((a, b) => {
+          const tierA = TIER_MAP[String(a.rank_type || "").toUpperCase()] || 99;
+          const tierB = TIER_MAP[String(b.rank_type || "").toUpperCase()] || 99;
+          return tierA - tierB;
+        })[0];
+        return {
+          user_id: latest.user_id,
+          rank_type: best.rank_type,
+          tester_id: latest.tester_id,
+          comment: latest.comment,
+          allTests: group.tests
+        };
+      });
+    }
+
+    function sortPlayers(players) {
+      return players.sort((a, b) => {
+        const rankA = String(a.rank_type || "").toUpperCase();
+        const rankB = String(b.rank_type || "").toUpperCase();
+        const htA = rankA.startsWith("HT");
+        const htB = rankB.startsWith("HT");
+        if (htA && !htB) return -1;
+        if (!htA && htB) return 1;
+        return String(a.user_id || "").localeCompare(String(b.user_id || ""), undefined, { sensitivity: "base" });
+      });
+    }
+
+    function playerRow(player) {
+      const rank = String(player.rank_type || "");
+      const row = document.createElement("div");
+      row.className = "row";
+      row.innerHTML = `
+        ${head(player.user_id, 22)}
+        <span class="nick">${escapeHtml(player.user_id)}</span>
+        <span class="badge ${rankKind(rank)}">${escapeHtml(rank)}</span>
+      `;
+      row.addEventListener("click", () => openPlayer(player));
+      return row;
+    }
+
+    function renderTiers(playersList) {
+      const tiers = { 1: [], 2: [], 3: [], 4: [], 5: [] };
+      playersList.forEach((player) => {
+        const n = TIER_MAP[String(player.rank_type || "").toUpperCase()];
+        if (n) tiers[n].push(player);
+      });
+      board.innerHTML = "";
+      [1, 2, 3, 4, 5].forEach((i) => {
+        const col = document.createElement("section");
+        col.className = "col t" + i;
+        col.innerHTML = `<h2>TIER ${i}</h2>`;
+        const list = document.createElement("div");
+        list.className = "list";
+        const people = sortPlayers(tiers[i]);
+        if (!people.length) {
+          list.innerHTML = '<p class="empty">Пусто</p>';
+        } else {
+          people.forEach((player) => list.appendChild(playerRow(player)));
+        }
+        col.appendChild(list);
+        board.appendChild(col);
+      });
+    }
+
+    function renderTesters(data) {
+      const counts = {};
+      data.forEach((item) => {
+        const tester = String(item.tester_id || "").trim();
+        if (tester && tester.toLowerCase() !== "не указан") counts[tester] = (counts[tester] || 0) + 1;
+      });
+      const chips = Object.entries(counts)
+        .sort((a, b) => b[1] - a[1])
+        .map(([name, count]) => `<span class="chip">${head(name, 22)} ${escapeHtml(name)} <em>${count}</em></span>`)
+        .join("");
+      testersEl.innerHTML = "<b>НАШИ ТЕСТЕРЫ</b>" + (chips || '<span class="empty">Тестеры не указаны</span>');
+    }
+
+    function renderSearch(query) {
+      if (!query) {
+        searchResults.innerHTML = '<p class="empty">Начните вводить ник...</p>';
+        return;
+      }
+      const filtered = groupedPlayers.filter((p) => String(p.user_id || "").toLowerCase().includes(query));
+      if (!filtered.length) {
+        searchResults.innerHTML = '<p class="empty">Игроки не найдены</p>';
+        return;
+      }
+      searchResults.innerHTML = "";
+      filtered.forEach((player) => searchResults.appendChild(playerRow(player)));
+    }
+
+    function openSearch() {
+      searchModal.classList.add("active");
+      searchInput.value = "";
+      renderSearch("");
+      searchInput.focus();
+    }
+
+    function openPlayer(player) {
+      searchModal.classList.remove("active");
+      document.getElementById("profile-avatar").src = "https://mc-heads.net/avatar/" + encodeURIComponent(player.user_id) + "/64";
+      document.getElementById("profile-nick").textContent = player.user_id;
+      document.getElementById("profile-meta").textContent = "Всего тестов: " + player.allTests.length;
+      document.getElementById("profile-history").innerHTML = player.allTests.map((test, i) => {
+        const comment = (test.comment && test.comment.trim() && test.comment !== "Без комментария")
+          ? escapeHtml(test.comment)
+          : "Комментарий отсутствует";
+        return `
+          <article class="test">
+            <div class="test-top">
+              <b>Тест #${i + 1} (${escapeHtml(test.rank_type)})</b>
+              <span>Тестер: ${escapeHtml(test.tester_id || "Не указан")}</span>
+            </div>
+            <div class="comment-label">Комментарий</div>
+            <p class="comment">${comment}</p>
+          </article>
+        `;
+      }).join("");
+      playerModal.classList.add("active");
+    }
+
+    function closeOverlays() {
+      searchModal.classList.remove("active");
+      playerModal.classList.remove("active");
+    }
+
+    async function loadResults() {
+      try {
+        const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const { data, error } = await client.from("test_results").select("*");
+        if (error) throw error;
+        const allResults = data || [];
+        groupedPlayers = groupPlayersByNick(allResults);
+        renderTiers(groupedPlayers);
+        renderTesters(allResults);
+      } catch (err) {
+        console.error(err);
+        board.innerHTML = '<p class="empty">База данных временно недоступна</p>';
+      }
+    }
+
+    document.getElementById("search-open").addEventListener("click", openSearch);
+    document.getElementById("profile-close").addEventListener("click", closeOverlays);
+    searchInput.addEventListener("input", (e) => renderSearch(e.target.value.toLowerCase().trim()));
+    searchModal.addEventListener("click", (e) => { if (e.target === searchModal) searchModal.classList.remove("active"); });
+    playerModal.addEventListener("click", (e) => { if (e.target === playerModal) playerModal.classList.remove("active"); });
+    document.addEventListener("keydown", (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        openSearch();
+      }
+      if (e.key === "Escape") closeOverlays();
+    });
+
+    loadResults();
+  </script>
+</body>
+</html>
